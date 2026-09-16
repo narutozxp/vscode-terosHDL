@@ -1,9 +1,9 @@
 {
-    "name": "teroshdl",
-    "displayName": "TerosHDL",
-    "publisher": "teros-technology",
+    "name": "teroshdl-narutozxp",
+    "displayName": "TerosHDL-NARUTOZXP",
+    "publisher": "narutozxp",
     "description": "Powerful toolbox for ASIC/FPGA: state machine viewer, linter, documentation, snippets... and more! ",
-    "version": "8.0.5",
+    "version": "8.0.6",
     "engines": {
         "vscode": "^1.74.0"
     },
@@ -27,10 +27,10 @@
     "homepage": "https://terostechnology.github.io/",
     "repository": {
         "type": "git",
-        "url": "https://github.com/TerosTechnology/vscode-terosHDL"
+        "url": "https://github.com/narutozxp/vscode-terosHDL"
     },
     "bugs": {
-        "url": "https://github.com/TerosTechnology/vscode-terosHDL/issues"
+        "url": "https://github.com/narutozxp/vscode-terosHDL/issues"
     },
     "main": "./out/teroshdl/extension.js",
     "_moduleAliases": {
