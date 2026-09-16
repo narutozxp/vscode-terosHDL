@@ -1,0 +1,28 @@
+name: Test Entra OIDC
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    environment: marketplace-release
+
+    steps:
+      - name: Login to Microsoft Entra ID
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Show Azure DevOps / Marketplace identity
+        run: |
+          az rest \
+            --method get \
+            --url "https://app.vssps.visualstudio.com/_apis/profile/profiles/me" \
+            --resource 499b84ac-1321-427f-aa17-267ca6975798
