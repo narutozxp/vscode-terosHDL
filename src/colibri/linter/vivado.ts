@@ -38,13 +38,13 @@ export class Vivado extends Base_linter {
     public set_binary(file: string) {
         const file_lang = get_language_from_filepath(file);
         let binary = "";
-        let extra_cmd = "--sv";
+        let extra_cmd = "";
         if (file_lang === LANGUAGE.VHDL) {
             binary = "xvhdl";
-            extra_cmd = "";
         }
         else if (file_lang === LANGUAGE.SYSTEMVERILOG) {
             binary = "xvlog";
+            extra_cmd = "--sv";
         }
         else {
             binary = "xvlog";
