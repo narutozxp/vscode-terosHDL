@@ -36,7 +36,7 @@
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],
-      "name": "Run TerosHDL",
+      "name": "Run ZHDL",
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/out/**/*.js"

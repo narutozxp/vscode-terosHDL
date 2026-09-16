@@ -17,13 +17,12 @@
 // You should have received a copy of the GNU General Public License
 // along with TerosHDL.  If not, see <https://www.gnu.org/licenses/>.
 
-import { extensions, workspace, window, Uri } from 'vscode';
+import { ExtensionContext, workspace, window, Uri } from 'vscode';
 import { posix } from 'path';
 import { TextEncoder } from 'util';
 
 // export const CONFIG_FILE_NAME = 'teros-hdl.config.json';
 export const USER_CONFIG_FILE_NAME = 'user.teros-hdl.config.json';
-export const TEROS_HDL_EXT_ID = 'teros-technology.teroshdl';
 
 type teros_hdl_config = {
   accents: Record<string, string>;
@@ -57,14 +56,13 @@ export class ExtensionManager implements IExtensionManager {
   private readonly userConfigFileUri: Uri;
   private configJSON!: teros_hdl_config;
 
-  constructor() {
-    let extension_path = <string>extensions.getExtension(TEROS_HDL_EXT_ID)?.extensionPath;
-    const extensionFolderUri = Uri.file(extension_path);
+  constructor(private readonly context: ExtensionContext) {
+    const extensionFolderUri = context.extensionUri;
     this.userConfigFileUri = extensionFolderUri.with({ path: posix.join(extensionFolderUri.path, USER_CONFIG_FILE_NAME) });
   }
 
   get_package_json(): PackageJSON {
-    return extensions.getExtension(TEROS_HDL_EXT_ID)?.packageJSON;
+    return this.context.extension.packageJSON;
   }
 
   get_config(): teros_hdl_config {

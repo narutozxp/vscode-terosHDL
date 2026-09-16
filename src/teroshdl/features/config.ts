@@ -124,7 +124,7 @@ export class Config_manager {
         this.currentConfigIsGlobal = true;
         this.currentProjectName = undefined;
         this.currentConfig = GlobalConfigManager.getInstance().get_config();
-        const windowTitle = "TerosHDL Global Settings";
+        const windowTitle = "ZHDL Global Settings";
         await this.createWebview(windowTitle, "");
     }
 
@@ -204,6 +204,7 @@ export class Config_manager {
             this.panel.webview.html = this.getWebviewContent(this.panel.webview);
         }
         this.panel.title = windowTitle;
+        this.panel.reveal(vscode.ViewColumn.One);
         await this.updateWebConfig(tabToOpen);
     }
 
@@ -247,7 +248,7 @@ export class Config_manager {
      */
     private exportConfig() {
         vscode.window.showSaveDialog({
-            title: "Export TerosHDL Settings",
+            title: "Export ZHDL Settings",
             saveLabel: "Save Settings",
             filters: {
                 "JSON": ["json"]
@@ -263,7 +264,7 @@ export class Config_manager {
     }
 
     private async loadConfigFromFile(): Promise<void> {
-        vscode.window.showOpenDialog({ title: "Load TerosHDL Settings", canSelectMany: false }).then((value) => {
+        vscode.window.showOpenDialog({ title: "Load ZHDL Settings", canSelectMany: false }).then((value) => {
             if (value === undefined) {
                 return;
             }
@@ -339,7 +340,7 @@ export class Config_manager {
      */
     private getMessageAlert(): string {
         if (this.currentConfigIsGlobal) {
-            return "- TerosHDL Global Settings.";
+            return "- ZHDL Global Settings.";
         }
         else {
             return `- ${this.currentProjectName}.`;

@@ -1,4 +1,4 @@
-name: Release TerosHDL-NARUTOZXP
+name: Release ZHDL
 
 on:
   push:
@@ -137,5 +137,5 @@ jobs:
           gh release create "$TAG" \
             "${{ steps.vsix.outputs.path }}" \
             --target "${GITHUB_SHA}" \
-            --title "TerosHDL-NARUTOZXP ${TAG}" \
+            --title "ZHDL ${TAG}" \
             --generate-notes

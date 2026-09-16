@@ -6,13 +6,13 @@
   title: Go to parent file
 
 - name: open
-  title: Open file with TerosHDL
+  title: Open file with ZHDL
 
 - name: configuration.global
-  title: "TerosHDL: Open Global Settings Menu"
+  title: "ZHDL: Open Global Settings Menu"
 
 - name: verifySetup
-  title: "TerosHDL: Verify Setup" 
+  title: "ZHDL: Verify Setup"
 
 ################################################################################
 # VSCode tree
@@ -149,7 +149,7 @@
   when: "view == teroshdl-view-runs"
 
 - name: view.runs.run
-  title: "TerosHDL: Run Tool"
+  title: "ZHDL: Run Tool"
   icon: run
   where: ["view/item/context"]
   when: "viewItem == run && view == teroshdl-view-runs"
@@ -204,46 +204,46 @@
   group: "inline"
 
 - name: project.quartus.rtlAnalyzer
-  title: "TerosHDL [Quartus]: Open RTL Analyzer"
+  title: "ZHDL [Quartus]: Open RTL Analyzer"
 
 - name: project.quartus.compileDesigh
-  title: "TerosHDL [Quartus]: Run Compile Design"
+  title: "ZHDL [Quartus]: Run Compile Design"
 
 - name: project.quartus.analysisAndSynthesis
-  title: "TerosHDL [Quartus]: run Analysis and Synthesis"
+  title: "ZHDL [Quartus]: run Analysis and Synthesis"
 
 - name: project.quartus.analysisAndElaboration
-  title: "TerosHDL [Quartus]: run Analysis and Elaboration"
+  title: "ZHDL [Quartus]: run Analysis and Elaboration"
 
 - name: project.quartus.synthesis
-  title: "TerosHDL [Quartus]: run Synthesis"
+  title: "ZHDL [Quartus]: run Synthesis"
 
 - name: project.quartus.earlyTimingAnalysis
-  title: "TerosHDL [Quartus]: run Early Timing Analysis"
+  title: "ZHDL [Quartus]: run Early Timing Analysis"
 
 - name: project.quartus.fitter
-  title: "TerosHDL [Quartus]: run Fitter"
+  title: "ZHDL [Quartus]: run Fitter"
 
 - name: project.quartus.fitterImplement
-  title: "TerosHDL [Quartus]: run Fitter Implement"
+  title: "ZHDL [Quartus]: run Fitter Implement"
 
 - name: project.quartus.plan
-  title: "TerosHDL [Quartus]: run Plan"
+  title: "ZHDL [Quartus]: run Plan"
 
 - name: project.quartus.place
-  title: "TerosHDL [Quartus]: run Place"
+  title: "ZHDL [Quartus]: run Place"
 
 - name: project.quartus.route
-  title: "TerosHDL [Quartus]: run Route"
+  title: "ZHDL [Quartus]: run Route"
 
 - name: project.quartus.fitterFinalize
-  title: "TerosHDL [Quartus]: run Fitter Finalize"
+  title: "ZHDL [Quartus]: run Fitter Finalize"
 
 - name: project.quartus.timingAnalysisSignoff
-  title: "TerosHDL [Quartus]: run Timing Analysis Signoff"
+  title: "ZHDL [Quartus]: run Timing Analysis Signoff"
 
 - name: project.quartus.assembler
-  title: "TerosHDL [Quartus]: run Assembler"
+  title: "ZHDL [Quartus]: run Assembler"
 
 ## Watcher
 - name: view.watcher.add
@@ -270,7 +270,7 @@
 # Editor
 ################################################################################
 - name: generate_template
-  title: "TerosHDL: Generate template"
+  title: "ZHDL: Generate template"
   icon: file-code
   where: ["editor/title"]
 
@@ -296,5 +296,5 @@
 
 # - name: quartus.add_ip
 #   title: Add Quartus IP core
-#   group: "TerosHDL"
+#   group: "ZHDL"
 #   where: ["editor/context"]

@@ -7,19 +7,19 @@
             "activitybar": [
                 {
                     "id": "teroshdl-project",
-                    "title": "TerosHDL",
-                    "icon": "resources/images/teros_logo.svg"
+                    "title": "ZHDL",
+                    "icon": "resources/images/zhdl-sidebar.svg"
                 }
             ],
             "panel": [
                 {
                     "id": "teroshdl-messages-view",
-                    "title": "TerosHDL: log report",
+                    "title": "ZHDL: log report",
                     "icon": "fancy.icon"
                 },
                 {
                     "id": "teroshdl-timing-view",
-                    "title": "TerosHDL: Timing",
+                    "title": "ZHDL: Timing",
                     "icon": "fancy.icon"
                 }
             ]
@@ -81,7 +81,7 @@
         "viewsWelcome": [
             {
                 "view": "teroshdl-project",
-                "contents": "No TerosHDL project are open.\n[Add Project](command:teroshdl.view.project.add)\nTo learn more about how to [setup a TerosHDL project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/)."
+                "contents": "No ZHDL project are open.\n[Add Project](command:teroshdl.view.project.add)\nTo learn more about how to [setup a ZHDL project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/)."
             },
             {
                 "view": "teroshdl-view-source",
@@ -89,7 +89,7 @@
             },
             {
                 "view": "teroshdl-view-dependency",
-                "contents": "Learn more about how to [setup TerosHDL to compute Hierarchy](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/hierarchy)."
+                "contents": "Learn more about how to [setup ZHDL to compute Hierarchy](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/hierarchy)."
             },
             {
                 "view": "teroshdl-view-actions",

@@ -1,9 +1,9 @@
 {
-    "name": "teroshdl-narutozxp",
-    "displayName": "TerosHDL-NARUTOZXP",
+    "name": "zhdl",
+    "displayName": "ZHDL",
     "publisher": "narutozxp",
     "description": "Powerful toolbox for ASIC/FPGA: state machine viewer, linter, documentation, snippets... and more! ",
-    "version": "8.0.6",
+    "version": "8.0.7",
     "engines": {
         "vscode": "^1.74.0"
     },
@@ -23,7 +23,7 @@
         "Formatters",
         "Linters"
     ],
-    "icon": "resources/images/icon_128_128_circle.png",
+    "icon": "resources/images/zhdl-icon.png",
     "homepage": "https://www.narutozxp.top/",
     "repository": {
         "type": "git",
@@ -41,19 +41,19 @@
             "activitybar": [
                 {
                     "id": "teroshdl-project",
-                    "title": "TerosHDL",
-                    "icon": "resources/images/teros_logo.svg"
+                    "title": "ZHDL",
+                    "icon": "resources/images/zhdl-sidebar.svg"
                 }
             ],
             "panel": [
                 {
                     "id": "teroshdl-messages-view",
-                    "title": "TerosHDL: log report",
+                    "title": "ZHDL: log report",
                     "icon": "fancy.icon"
                 },
                 {
                     "id": "teroshdl-timing-view",
-                    "title": "TerosHDL: Timing",
+                    "title": "ZHDL: Timing",
                     "icon": "fancy.icon"
                 }
             ]
@@ -115,7 +115,7 @@
         "viewsWelcome": [
             {
                 "view": "teroshdl-project",
-                "contents": "No TerosHDL project are open.\n[Add Project](command:teroshdl.view.project.add)\nTo learn more about how to [setup a TerosHDL project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/)."
+                "contents": "No ZHDL project are open.\n[Add Project](command:teroshdl.view.project.add)\nTo learn more about how to [setup a ZHDL project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/)."
             },
             {
                 "view": "teroshdl-view-source",
@@ -123,7 +123,7 @@
             },
             {
                 "view": "teroshdl-view-dependency",
-                "contents": "Learn more about how to [setup TerosHDL to compute Hierarchy](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/hierarchy)."
+                "contents": "Learn more about how to [setup ZHDL to compute Hierarchy](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/hierarchy)."
             },
             {
                 "view": "teroshdl-view-actions",
@@ -370,15 +370,15 @@
             },
             {
                 "command": "teroshdl.open",
-                "title": "Open file with TerosHDL"
+                "title": "Open file with ZHDL"
             },
             {
                 "command": "teroshdl.configuration.global",
-                "title": "TerosHDL: Open Global Settings Menu"
+                "title": "ZHDL: Open Global Settings Menu"
             },
             {
                 "command": "teroshdl.verifySetup",
-                "title": "TerosHDL: Verify Setup"
+                "title": "ZHDL: Verify Setup"
             },
             {
                 "command": "teroshdl.waveform",
@@ -534,7 +534,7 @@
                     "light": "resources/icon/light/run.svg",
                     "dark": "resources/icon/dark/run.svg"
                 },
-                "title": "TerosHDL: Run Tool"
+                "title": "ZHDL: Run Tool"
             },
             {
                 "command": "teroshdl.view.tasks.stop",
@@ -594,59 +594,59 @@
             },
             {
                 "command": "teroshdl.project.quartus.rtlAnalyzer",
-                "title": "TerosHDL [Quartus]: Open RTL Analyzer"
+                "title": "ZHDL [Quartus]: Open RTL Analyzer"
             },
             {
                 "command": "teroshdl.project.quartus.compileDesigh",
-                "title": "TerosHDL [Quartus]: Run Compile Design"
+                "title": "ZHDL [Quartus]: Run Compile Design"
             },
             {
                 "command": "teroshdl.project.quartus.analysisAndSynthesis",
-                "title": "TerosHDL [Quartus]: run Analysis and Synthesis"
+                "title": "ZHDL [Quartus]: run Analysis and Synthesis"
             },
             {
                 "command": "teroshdl.project.quartus.analysisAndElaboration",
-                "title": "TerosHDL [Quartus]: run Analysis and Elaboration"
+                "title": "ZHDL [Quartus]: run Analysis and Elaboration"
             },
             {
                 "command": "teroshdl.project.quartus.synthesis",
-                "title": "TerosHDL [Quartus]: run Synthesis"
+                "title": "ZHDL [Quartus]: run Synthesis"
             },
             {
                 "command": "teroshdl.project.quartus.earlyTimingAnalysis",
-                "title": "TerosHDL [Quartus]: run Early Timing Analysis"
+                "title": "ZHDL [Quartus]: run Early Timing Analysis"
             },
             {
                 "command": "teroshdl.project.quartus.fitter",
-                "title": "TerosHDL [Quartus]: run Fitter"
+                "title": "ZHDL [Quartus]: run Fitter"
             },
             {
                 "command": "teroshdl.project.quartus.fitterImplement",
-                "title": "TerosHDL [Quartus]: run Fitter Implement"
+                "title": "ZHDL [Quartus]: run Fitter Implement"
             },
             {
                 "command": "teroshdl.project.quartus.plan",
-                "title": "TerosHDL [Quartus]: run Plan"
+                "title": "ZHDL [Quartus]: run Plan"
             },
             {
                 "command": "teroshdl.project.quartus.place",
-                "title": "TerosHDL [Quartus]: run Place"
+                "title": "ZHDL [Quartus]: run Place"
             },
             {
                 "command": "teroshdl.project.quartus.route",
-                "title": "TerosHDL [Quartus]: run Route"
+                "title": "ZHDL [Quartus]: run Route"
             },
             {
                 "command": "teroshdl.project.quartus.fitterFinalize",
-                "title": "TerosHDL [Quartus]: run Fitter Finalize"
+                "title": "ZHDL [Quartus]: run Fitter Finalize"
             },
             {
                 "command": "teroshdl.project.quartus.timingAnalysisSignoff",
-                "title": "TerosHDL [Quartus]: run Timing Analysis Signoff"
+                "title": "ZHDL [Quartus]: run Timing Analysis Signoff"
             },
             {
                 "command": "teroshdl.project.quartus.assembler",
-                "title": "TerosHDL [Quartus]: run Assembler"
+                "title": "ZHDL [Quartus]: run Assembler"
             },
             {
                 "command": "teroshdl.view.watcher.add",
@@ -678,7 +678,7 @@
                     "light": "resources/icon/light/file-code.svg",
                     "dark": "resources/icon/dark/file-code.svg"
                 },
-                "title": "TerosHDL: Generate template"
+                "title": "ZHDL: Generate template"
             },
             {
                 "command": "teroshdl.state_machine.viewer",
@@ -917,7 +917,7 @@
         "build-package": "cd auto_package && ./gen.sh",
         "clean": "shx rm -rf out",
         "vscode:prepublish": "npm run generate-examples & npm run compile",
-        "compile": "npm run-script copy-files && npm run-script build-webviews & npm run-script build-webviews-configuration & tsc -p ./",
+        "compile": "npm run copy-files && npm run build-webviews && npm run build-webviews-configuration && tsc -p ./",
         "lint": "eslint src",
         "watch": "npm run-script copy-files & tsc --watch --p ./tsconfig.json & nodemon --ignore 'resources/webviews/reporters/**/wb/**' --watch resources/webviews/reporters -e js,ts,tsx,html --exec \"npm run-script build-webviews\"",
         "generate-examples": "cd ./resources/project_manager; ./copy_examples.sh",

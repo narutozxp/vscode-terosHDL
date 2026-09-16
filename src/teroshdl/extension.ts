@@ -30,7 +30,7 @@ let teroshdl: Teroshdl | undefined = undefined;
 export async function activate(context: vscode.ExtensionContext) {
     debugLogger.info('Congratulations, your extension "TerosHDL" is now active!');
 
-    const extension_manager = new ExtensionManager();
+    const extension_manager = new ExtensionManager(context);
 
     globalLogger.clear();
     toolLogger.clear();

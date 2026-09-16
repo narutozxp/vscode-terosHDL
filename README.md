@@ -1,60 +1,58 @@
-[![Current Version](https://img.shields.io/visual-studio-marketplace/v/teros-technology.teroshdl.png)](https://marketplace.visualstudio.com/items?itemName=teros-technology.teroshdl)
-[![Install Count](https://img.shields.io/visual-studio-marketplace/i/teros-technology.teroshdl.png)](https://marketplace.visualstudio.com/items?itemName=teros-technology.teroshdl)
-[![Download Count](https://img.shields.io/visual-studio-marketplace/d/teros-technology.teroshdl.png)](https://marketplace.visualstudio.com/items?itemName=teros-technology.teroshdl)
-[![vscode-TerosHDL documentation](https://img.shields.io/website.svg?label=vscode-TerosHDL%20Documentation&longCache=true&style=flat-square&url=http%3A%2F%2FTerosTechnology.github.io%2FterosHDLdoc%2Findex.html)](https://TerosTechnology.github.io/terosHDLdoc)
+> 本项目基于 [TerosHDL 原仓库](https://github.com/TerosTechnology/vscode-terosHDL) 修改，是由 `narutozxp` 维护的派生版本。
 
+# ZHDL
 
-![TerosHDL](https://github.com/TerosTechnology/vscode-terosHDL/blob/dev//resources/images/low_res_banner.png?raw=true)
+![ZHDL 图标](resources/images/zhdl-icon.png)
 
-**Check the full documentation:** [https://terostechnology.github.io](https://terostechnology.github.io/)
+面向 ASIC / FPGA 开发的 VS Code 扩展，提供 Verilog、SystemVerilog 和 VHDL 编辑、项目管理及工具集成。
 
+## 功能
 
-The goal of TerosHDL is to provide an open source toolbox for HDL devlopers with functionalities commonly used by software developers. The toolbox consist in a bunch of tools and on top of them is the VSCode plugin. Some tools are developed by Teros Technology organization and others come from open source proyects. All the tools are organized in different backends and exposed to the GUI with the plugin.
+- 语法高亮、代码片段与模板生成。
+- Verilog / SystemVerilog 关键字补全，以及已有的符号补全。
+- 跳转定义、悬停提示、层次结构与依赖查看。
+- 语法检查、Verible 风格检查与代码格式化。
+- HDL 文档生成、原理图查看与状态机工具。
+- 仿真器及综合工具集成，包括 GHDL、Verilator、Icarus Verilog、Yosys、Vivado、Quartus、VUnit、cocotb 等。
 
-The toolbox tries to be as much self-contained as possible and simplify the installation process. Features:
+## 本分支修改
 
-- Simulators and tools support: [Raptor](https://rapidsilicon.com/raptor/), Vivado, ModelSim, GHDL, Verilator, Icarus, VCS, Yosys, VUnit, cocotb, Diamond, Icestorm, ISE, Quartus, Radiant, Spyglass, Symbiflow, Trellis, Xcelium... and more!
-- Go to definition.
-- Hover.
-- Hiterachy viewer.
-- Dependencies viewer.
-- Syntax highlighting.
-- Template generator.
-- Automatic documentation.
-- Verilog/SV schematic viewer.
-- Errors linter.
-- Style linter: Verible.
-- Code formatting.
-- State machine viewer.
-- State machine designer.
-- Code snippets and grammar.
+- 按文件语言提供 Verilog 和 SystemVerilog 关键字补全。
+- 修复 ctags 尚未解析当前文件时，补全请求不返回的问题。
+- 使用当前扩展上下文读取安装目录及版本信息，支持修改插件名称和发布者。
+- 再次打开设置菜单时，显示已有的设置页面。
 
-![TerosHDL](https://github.com/TerosTechnology/vscode-terosHDL/blob/dev//resources/images/gui.gif?raw=true)
+## 本地开发
 
-## Development
+需要 Node.js 22、npm、Python 3 和 Git。在仓库根目录依次执行：
 
-if you want to contribute with a bug fix or new feature implementation you can use the following steps:
+```bash
+npm install
+npm run compile
+```
 
-  1. make fork
-  2. `git clone [FORK URL]`
-  3. `cd vscode-terosHDL`
-  4. `git checkout dev` this should put you on *dev* branch where we do development
-  5. `npm install`
+在 VS Code 的“运行和调试”中选择 **Run ZHDL**，按 **F5** 启动扩展开发宿主。该配置会启动编译监视任务；修改源码并编译完成后，在开发宿主窗口执行 **Developer: Reload Window**。
 
-now you can start coding. Tests can be run using `npm run test` once you are done you can open a pull request!
+检查与测试：
 
+```bash
+npx tsc -p ./ --noEmit
+npm test
+npm run lint
+```
 
+验证关键字补全时，打开并保存 `.v` 或 `.sv` 文件，确认语言模式分别为 Verilog 或 SystemVerilog，输入 `alw`、`pos` 等前缀后按 `Ctrl+Space`。SystemVerilog 文件还应提供 `always_ff`、`always_comb`、`logic` 等候选。
 
-## Managed by
+## 文档与反馈
 
-- [Carlos Alberto Ruiz](https://www.linkedin.com/in/carlos-alberto-ruiz-fpga/): carlosruiznaranjo@gmail.com
-- [Ismael Pérez](https://www.linkedin.com/in/ispero/): ismaelprojo@gmail.com
+- [本仓库文档](docs/)
+- [问题反馈](https://github.com/narutozxp/vscode-terosHDL/issues)
+- [上游 TerosHDL 使用文档](https://terostechnology.github.io/terosHDLdoc/)，可作为共有功能的参考。
 
-## Sponsor
+## 致谢
 
-This project was funded through the NGI Assure Fund, a fund established by NLnet with financial support from
-the European Commission's Next Generation Internet programme, under the aegis of DG Communications Networks,
-Content and Technology under grant agreement No 957073.
+感谢 [Teros Technology](https://github.com/TerosTechnology) 及 [TerosHDL 原仓库](https://github.com/TerosTechnology/vscode-terosHDL) 的维护者与贡献者。本项目的基础功能和架构来自其开源工作。
 
+## 许可证
 
-<img border=0 src="https://github.com/TerosTechnology/vscode-terosHDL/blob/dev/resources/images/nlnet-fundation-150x150.png?raw=true" width="150" height="150"><img border=0 src="https://github.com/TerosTechnology/vscode-terosHDL/blob/dev/resources/images/logo.png?raw=true" width="400" height="120">
+沿用原项目的 [GNU GPL v3 许可证](LICENSE)。源文件中的原作者版权声明予以保留。

@@ -23,9 +23,10 @@
 import {
     CompletionItemProvider, CompletionItem, TextDocument, Position,
     CancellationToken, CompletionContext, ProviderResult, CompletionItemKind,
-    CompletionTriggerKind, Range, MarkdownString
+    Range, MarkdownString
 } from "vscode";
-import { Ctags, CtagsManager, Symbol } from '../ctags';
+import { Ctags, CtagsManager } from '../ctags';
+import { getKeywords } from './keywords';
 import { Logger } from "../Logger";
 
 export default class VerilogCompletionItemProvider implements CompletionItemProvider {
@@ -41,13 +42,15 @@ export default class VerilogCompletionItemProvider implements CompletionItemProv
         context: CompletionContext): ProviderResult<CompletionItem[]> {
         this.logger.log("Completion items requested");
         return new Promise((resolve, reject) => {
-            let items: CompletionItem[] = [];
+            let items: CompletionItem[] = getKeywords(document.languageId).map(keyword => {
+                const item = new CompletionItem(keyword, CompletionItemKind.Keyword);
+                item.detail = document.languageId === 'systemverilog'
+                    ? 'SystemVerilog keyword' : 'Verilog keyword';
+                return item;
+            });
 
             let ctags: Ctags = CtagsManager.ctags;
-            if (ctags.doc === undefined || ctags.doc.uri !== document.uri) { // systemverilog keywords
-                return;
-            }
-            else {
+            if (ctags.doc !== undefined && ctags.doc.uri.toString() === document.uri.toString()) {
                 ctags.symbols.forEach(symbol => {
                     let newItem: CompletionItem = new CompletionItem(symbol.name, this.getCompletionItemKind(symbol.type));
                     let codeRange = new Range(symbol.startPosition, new Position(symbol.startPosition.line, Number.MAX_VALUE));
