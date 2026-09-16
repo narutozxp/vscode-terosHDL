@@ -43,9 +43,9 @@ export default class VerilogCompletionItemProvider implements CompletionItemProv
         this.logger.log("Completion items requested");
         return new Promise((resolve, reject) => {
             let items: CompletionItem[] = getKeywords(document.languageId).map(keyword => {
-                const item = new CompletionItem(keyword, CompletionItemKind.Keyword);
-                item.detail = document.languageId === 'systemverilog'
-                    ? 'SystemVerilog keyword' : 'Verilog keyword';
+                const item = new CompletionItem({ label: keyword, description: 'keyword' }, CompletionItemKind.Keyword);
+                item.detail = 'keyword';
+                item.insertText = keyword;
                 return item;
             });
 
