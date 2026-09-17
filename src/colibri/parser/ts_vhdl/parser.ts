@@ -619,4 +619,3 @@ export class Vhdl_parser extends Ts_base_parser implements Parser_base {
         "comment_end": description, comment_end_line: comment_end_line };
     }
 }
-

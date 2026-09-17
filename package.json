@@ -37,6 +37,28 @@
         "colibri": "./out/colibri"
     },
     "contributes": {
+        "configuration": {
+            "title": "ZHDL",
+            "properties": {
+                "zhdl.indexing.liveParsing": {
+                    "type": "boolean",
+                    "default": false,
+                    "scope": "resource",
+                    "description": "试验功能：使用后台 Tree-sitter 增量解析未保存的 Verilog / SystemVerilog 变量和端口，更新补全与大纲。复杂编辑可能触发较慢的全量符号提取。"
+                },
+                "zhdl.indexing.scope": {
+                    "type": "string",
+                    "enum": ["openFiles", "workspace"],
+                    "enumDescriptions": [
+                        "仅索引当前打开的 Verilog / SystemVerilog 文件。",
+                        "索引当前文件所属 workspace 文件夹中的 Verilog / SystemVerilog 文件。"
+                    ],
+                    "default": "openFiles",
+                    "scope": "resource",
+                    "description": "当前文件不属于 ZHDL 工程时，模块补全与实例化使用的索引范围。属于工程的文件优先使用工程文件列表。"
+                }
+            }
+        },
         "viewsContainers": {
             "activitybar": [
                 {

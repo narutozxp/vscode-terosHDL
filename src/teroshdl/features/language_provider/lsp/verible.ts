@@ -77,11 +77,10 @@ export class Verilbe_lsp {
         let clientOptions: LanguageClientOptions = {
             documentSelector: [{ scheme: 'file', language: 'verilog' }, { scheme: 'file', language: 'systemverilog' }],
             revealOutputChannelOn: RevealOutputChannelOn.Never,
-            // middleware: {
-            //     provideDiagnostics: () => {
-            //         return undefined;
-            //     }
-            // }
+            middleware: {
+                // Ctags already supplies the outline and maintains the symbol completion cache.
+                provideDocumentSymbols: () => []
+            }
         };
 
         // Create the language client
@@ -98,6 +97,10 @@ export class Verilbe_lsp {
         this.context.subscriptions.push(this.languageServerDisposable);
 
         return true;
+    }
+
+    public supportsHover(): boolean {
+        return !!this.client?.initializeResult?.capabilities.hoverProvider;
     }
 
     async check_run(binPath: string) {
@@ -129,8 +132,11 @@ export class Verilbe_lsp {
 
     embeddedVersion(languageServerDir: string): string {
         try {
-            const dirs = fs.readdirSync(languageServerDir);
-            // Return the first directory found, or default to '0.0.0' if none
+            const binaryName = languageServerBinaryName + (isWindows ? '.exe' : '');
+            const dirs = fs.readdirSync(languageServerDir)
+                .filter(dir => fs.existsSync(path.join(languageServerDir, dir, binaryName)))
+                .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+            // Ignore obsolete directories retained by filesystems with open binaries.
             return dirs.length > 0 ? dirs[0] : '0.0.0';
         } catch {
             return '0.0.0';

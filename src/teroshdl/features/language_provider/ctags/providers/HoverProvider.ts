@@ -24,26 +24,42 @@
 import { HoverProvider, TextDocument, Position, CancellationToken, Hover, window, Range, MarkdownString } from 'vscode';
 import { Ctags, CtagsManager, Symbol } from '../ctags';
 import { Logger, Log_Severity } from '../Logger';
+import { FileSymbolCache } from '../../index/fileCache';
+import { getCompletionScopes, getVisibleCompletionSymbols } from './completionScopes';
 
 export default class VerilogHoverProvider implements HoverProvider {
     // lang: verilog / systemverilog
     private logger: Logger;
 
-    constructor(logger: Logger) {
+    constructor(logger: Logger, private cache: FileSymbolCache = CtagsManager.fileCache) {
         this.logger = logger;
     }
 
-    public provideHover(document: TextDocument, position: Position, token: CancellationToken): Hover | undefined {
+    public provideHover(document: TextDocument, position: Position, token: CancellationToken): Hover | undefined | Promise<Hover | undefined> {
         this.logger.log("Hover requested");
         // get word start and end
         let textRange = document.getWordRangeAtPosition(position);
-        if (textRange?.isEmpty) {
+        if (textRange === undefined || textRange.isEmpty) {
             return;
         }
         // hover word
         let targetText = document.getText(textRange);
+        if (this.cache && document.uri.scheme === 'file') {
+            const version = document.version;
+            return this.cache.get(document.uri.fsPath).then(snapshot => {
+                if (token?.isCancellationRequested || version !== document.version) { return; }
+                const symbols = ['verilog', 'systemverilog'].includes(document.languageId) ?
+                    getVisibleCompletionSymbols(snapshot.symbols, getCompletionScopes(document.getText()), document.offsetAt(position)) : snapshot.symbols;
+                const symbol = symbols.find(symbol => document.languageId === 'vhdl' ?
+                    symbol.name.toUpperCase() === targetText.toUpperCase() : symbol.name === targetText);
+                if (!symbol) { return; }
+                const hoverText = new MarkdownString();
+                hoverText.appendCodeblock(snapshot.source.split('\n')[symbol.startPosition.line]?.trim() ?? '', document.languageId);
+                return new Hover(hoverText);
+            }).catch(error => { this.logger.log(`Hover indexing failed: ${error}`, Log_Severity.Error); return undefined; });
+        }
         let ctags: Ctags = CtagsManager.ctags;
-        if (ctags.doc === undefined || ctags.doc.uri !== document.uri) { // systemverilog keywords
+        if (ctags.doc === undefined || ctags.doc.uri.toString() !== document.uri.toString()) { // systemverilog keywords
             return;
         }
         else {
@@ -92,4 +108,3 @@ export default class VerilogHoverProvider implements HoverProvider {
         }
     }
 }
-

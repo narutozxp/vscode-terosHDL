@@ -50,6 +50,28 @@
       "preLaunchTask": "teros watch",
       "request": "launch",
       "type": "extensionHost"
+    },
+    {
+      "name": "Run ZHDL (diagnostic)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}", "--extensionEnvironment={\"ZHDL_TRACE_RUNTIME\":\"1\"}"],
+      "env": { "ZHDL_TRACE_RUNTIME": "1" },
+      "trace": true,
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "preLaunchTask": "teros watch"
+    },
+    {
+      "name": "Run ZHDL (diagnostic, isolated)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}", "--disable-extensions", "--extensionEnvironment={\"ZHDL_TRACE_RUNTIME\":\"1\"}"],
+      "env": { "ZHDL_TRACE_RUNTIME": "1" },
+      "trace": true,
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "preLaunchTask": "teros watch"
     }
   ]
 }

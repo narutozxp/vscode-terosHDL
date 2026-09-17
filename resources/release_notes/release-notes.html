@@ -1,62 +1,52 @@
-<style>
-    img {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    body {
-        background-color: #282c34;
-        color: white;
-        font-family: Verdana, sans-serif;
-    }
-
-    .main {
-        margin-left: 120px;
-        margin-right: 120px;
-        font-size: 18px;
-    }
-
-    a {
-        color: hotpink;
-    }
-</style>
-
-<img src="{{banner}}" alt="banner" />
-<div class="main">
-
-    <p>We value your feedback and would appreciate it if you could take a moment to complete the survey below:
-        <a href="https://forms.gle/vFqqjfb3hwVAfkY59">
-            https://forms.gle/vFqqjfb3hwVAfkY59
-        </a>
-    </p>
-    <br>
-        <p>Full documentation and tutorials:
-            <a href="https://terostechnology.github.io">
-                https://terostechnology.github.io
-            </a>
-        </p>
-    <br>
-
-
-    <center><h1 id="release-notes">🎉🎉 Release notes TEROSHDL_VERSION 🎉🎉</h1></center>
-
-    <p>
-        Improvements:
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
+    <title>ZHDL 发布说明</title>
+    <style>
+        body {
+            color: var(--vscode-foreground);
+            background: var(--vscode-editor-background);
+            font-family: var(--vscode-font-family);
+            line-height: 1.7;
+            padding: 24px;
+        }
+        main { max-width: 760px; margin: 0 auto; }
+        a { color: var(--vscode-textLink-foreground); }
+        a:hover { color: var(--vscode-textLink-activeForeground); }
+        code { font-family: var(--vscode-editor-font-family); }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>ZHDL ZHDL_VERSION 发布说明</h1>
+        <h2>新增与改进</h2>
         <ul>
-            <li>Fix Quartus tasks with other extensions</li>
-            <li>Set VHDL-LS as default linter.</li>
-            <li>Update VHDL-LS to 0.83.1</li>
-            <li>New config for VHDL-LS: settings for VHDL Version</li>
-            <li>Show errors in run.py watcher.</li>
-            <li>VHDL-LS configuration: VUnit as external library</li>
-            <li>Fix Language Server stop in remote SSH: add force timeout</li>
-            <li>Fix Export settings.</li>
-            <li>Fix template company header</li>
-            <li>Prevent to create temporary files in the root folder for schematic viewer</li>
-            <li>Auto detect GHDL import in shematic viewer</li>
-            <li>Add ifdef completions for Verilog and SystemVerilog</li>
+            <li>按文件语言提供 Verilog / SystemVerilog 关键字补全。</li>
+            <li>补全列表默认显示 <code>keyword</code> 类型，选中后只插入关键字。</li>
+            <li>按文件维护符号缓存与工程模块索引，支持跨文件模块实例化模板及 Tab 编辑实例名和连接。</li>
+            <li>补全实例的命名端口、参数与层次端口，排除已连接的端口。</li>
+            <li>Outline 显示信号位宽、端口类型与实例对应的模块名。</li>
+            <li>更新 ZHDL 名称、扩展图标和侧栏图标。</li>
+            <li>整理 README，补充本地开发步骤、配置文件位置及上游致谢。</li>
         </ul>
-    </p>
-
-</div>
+        <h2>修复</h2>
+        <ul>
+            <li>ctags 未解析当前文件时，关键字补全仍能正常返回。</li>
+            <li>使用当前扩展上下文读取安装目录及版本信息，修复改名后的激活问题。</li>
+            <li>再次打开设置菜单时，将已有设置页面显示到前台。</li>
+            <li>保留 ctags 大纲，避免与 Verible 的符号列表重复显示。</li>
+            <li>根据 Verible 实际能力启用后备悬停提示，修复服务启动成功但没有悬停的问题。</li>
+            <li>完整构建按顺序执行，任一步失败时停止构建。</li>
+        </ul>
+        <h2>配置文件</h2>
+        <p>全局设置保存在 <code>~/.teroshdl2_config.json</code>，项目列表保存在
+            <code>~/.teroshdl2_prj.json</code>。当前 ZHDL 与原 TerosHDL 在同一环境、同一用户下共享这些文件。</p>
+        <p><a href="https://github.com/narutozxp/vscode-terosHDL">项目文档</a> ·
+            <a href="https://github.com/narutozxp/vscode-terosHDL/issues">问题反馈</a></p>
+        <p>本项目基于 <a href="https://github.com/TerosTechnology/vscode-terosHDL">TerosHDL</a> 修改，感谢上游维护者与贡献者。</p>
+    </main>
+</body>
+</html>

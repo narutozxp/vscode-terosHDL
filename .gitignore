@@ -29,3 +29,4 @@ resources/project_manager/help
 venv/
 work/
 __pycache__/
+.fuse_hidden*

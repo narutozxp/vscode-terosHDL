@@ -29,7 +29,7 @@ export class ReleaseNotesWebview extends WebviewController<Record<string, unknow
   }
 
   get title(): string {
-    return 'TerosHDL Release Notes';
+    return 'ZHDL 发布说明';
   }
 
   /**

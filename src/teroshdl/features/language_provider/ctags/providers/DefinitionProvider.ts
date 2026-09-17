@@ -22,68 +22,56 @@
 
 import {
     DefinitionProvider, TextDocument, CancellationToken, Position,
-    ProviderResult, DefinitionLink, Range
+    ProviderResult, DefinitionLink, Range, Uri
 } from 'vscode';
 import { Ctags, CtagsManager, Symbol } from '../ctags';
 import { Logger } from '../Logger';
+import { FileSymbolCache } from '../../index/fileCache';
+import type { ProjectLanguageService } from '../../index/projectService';
+import { getCompletionScopes, getVisibleCompletionSymbols } from './completionScopes';
 
 export default class VerilogDefinitionProvider implements DefinitionProvider {
 
     private logger: Logger;
-    constructor(logger: Logger) {
+    constructor(logger: Logger, private cache: FileSymbolCache = CtagsManager.fileCache,
+        private project?: ProjectLanguageService) {
         this.logger = logger;
     }
 
-    provideDefinition(document: TextDocument, position: Position,
+    async provideDefinition(document: TextDocument, position: Position,
         token: CancellationToken): Promise<DefinitionLink[]> {
-        this.logger.log("Definitions Requested: " + document.uri);
-        return new Promise((resolve, reject) => {
-            // get word start and end
-            let textRange = document.getWordRangeAtPosition(position);
-            if (textRange?.isEmpty) {
-                return;
+        const word = document.getWordRangeAtPosition(position);
+        if (!word || word.isEmpty) { return []; }
+        const name = document.getText(word);
+        const version = document.version;
+        const verilog = ['verilog', 'systemverilog'].includes(document.languageId);
+        try {
+            const snapshot = this.cache && document.uri.scheme === 'file' ? await this.cache.get(document.uri.fsPath) : undefined;
+            if (token?.isCancellationRequested || document.version !== version) { return []; }
+            const ctags = CtagsManager.ctags;
+            let symbols = snapshot?.symbols ?? (ctags?.doc?.uri.toString() === document.uri.toString() ? ctags.symbols : []);
+            if (verilog) { symbols = getVisibleCompletionSymbols(symbols, getCompletionScopes(document.getText()), document.offsetAt(position)); }
+            const matches = symbols.filter(symbol => document.languageId === 'vhdl' ?
+                symbol.name.toUpperCase() === name.toUpperCase() : symbol.name === name);
+            const definitions: DefinitionLink[] = matches.map(symbol => ({
+                originSelectionRange: word,
+                targetUri: document.uri,
+                targetRange: new Range(symbol.startPosition, symbol.endPosition),
+                targetSelectionRange: new Range(symbol.startPosition, new Position(symbol.startPosition.line, symbol.name.length))
+            }));
+            if (verilog && this.project && !matches.some(symbol => symbol.type !== 'module')) {
+                const modules = (await this.project.modules(document)).filter(module => module.name === name);
+                if (token?.isCancellationRequested || document.version !== version) { return []; }
+                return modules.map(module => {
+                    const line = this.cache?.peek(module.filePath)?.source.split('\n')[module.line] ?? '';
+                    const column = Math.max(0, line.indexOf(module.name));
+                    const selection = new Range(new Position(module.line, column), new Position(module.line, column + module.name.length));
+                    return { originSelectionRange: word, targetUri: Uri.file(module.filePath),
+                        targetRange: selection, targetSelectionRange: selection };
+                });
             }
-            // hover word
-            let targetText = document.getText(textRange);
-            let ctags: Ctags = CtagsManager.ctags;
-            if (ctags.doc === undefined || ctags.doc.uri !== document.uri) { // systemverilog keywords
-                return;
-            }
-            else {
-                let matchingSymbols: Symbol[] = [];
-                let definitions: DefinitionLink[] = [];
-                // find all matching symbols
-                for (let i of ctags.symbols) {
-                    //VHDL is case insensitive
-                    if (document.languageId === "vhdl") {
-                        if (i.name.toUpperCase() === targetText.toUpperCase()) {
-                            matchingSymbols.push(i);
-                        }
-                    }
-                    //Verilog is case sensitive
-                    else if (document.languageId === "verilog" || document.languageId === "systemverilog") {
-                        if (i.name === targetText) {
-                            matchingSymbols.push(i);
-                        }
-                    }
-                    //TCL is case sensitive
-                    else if (document.languageId === "tcl") {
-                        if (i.name === targetText) {
-                            matchingSymbols.push(i);
-                        }
-                    }
-                }
-                for (let i of matchingSymbols) {
-                    definitions.push({
-                        targetUri: document.uri,
-                        targetRange: new Range(i.startPosition, new Position(i.startPosition.line, Number.MAX_VALUE)),
-                        targetSelectionRange: new Range(i.startPosition, i.endPosition)
-                    });
-                }
-                this.logger.log(definitions.length + " definitions returned");
-                resolve(definitions);
-            }
-        });
+            return definitions;
+        } catch (error) { this.logger.log(`Definition indexing failed: ${error}`); return []; }
     }
 
 }

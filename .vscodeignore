@@ -14,3 +14,6 @@ auto_package
 tests
 tests_impr
 resources/images/ChatGPT Image*.png
+**/.fuse_hidden*
+server/*.zip*
+server/*.tar.gz*

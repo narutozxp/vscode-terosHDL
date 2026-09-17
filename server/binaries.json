@@ -1,0 +1,41 @@
+{
+  "veribleVersion": "v0.0-4219-g3275ab72",
+  "ctagsVersion": "6.2.0 (ab95af1), official nightly 2026-09-16",
+  "assets": [
+    {
+      "tool": "verible",
+      "url": "https://github.com/chipsalliance/verible/releases/download/v0.0-4219-g3275ab72/verible-v0.0-4219-g3275ab72-linux-static-x86_64.tar.gz",
+      "sha256": "f5da0452c8be37a7c5155a8aaab962821d20aaa0fcd51fce6480a26a716e7482",
+      "member": "verible-v0.0-4219-g3275ab72/bin/verible-verilog-ls",
+      "destination": "server/verible/v0.0-4219-g3275ab72/verible-verilog-ls"
+    },
+    {
+      "tool": "verible",
+      "url": "https://github.com/chipsalliance/verible/releases/download/v0.0-4219-g3275ab72/verible-v0.0-4219-g3275ab72-win64.zip",
+      "sha256": "2fadd59ac3f8a59161b3da0e346c38eb372d29402de2489d399adcba41877990",
+      "member": "verible-v0.0-4219-g3275ab72-win64/verible-verilog-ls.exe",
+      "destination": "server/verible/v0.0-4219-g3275ab72/verible-verilog-ls.exe"
+    },
+    {
+      "tool": "ctags",
+      "url": "https://github.com/universal-ctags/ctags-nightly-build/releases/download/2026.09.16%2Bab95af198f8eaeb6d50dc96e3adf52e769d3e5f0/uctags-2026.09.16-linux-x86_64.release.tar.gz",
+      "sha256": "470d339f688bb75f0418791e57670d36f3d3e57b05336f2b06329b0a2ba99495",
+      "member": "uctags-2026.09.16-linux-x86_64.release/bin/ctags",
+      "destination": "resources/bin/ctags/universal-ctags-linux"
+    },
+    {
+      "tool": "ctags",
+      "url": "https://github.com/universal-ctags/ctags-nightly-build/releases/download/2026.09.16%2Bab95af198f8eaeb6d50dc96e3adf52e769d3e5f0/uctags-2026.09.16-macos-10.15-x86_64.release.tar.gz",
+      "sha256": "6d9791b5fb3f84c35049a9fa91d08dfcaaa0ffd96265891a141c52303e31a086",
+      "member": "uctags-2026.09.16-macos-10.15-x86_64.release/bin/ctags",
+      "destination": "resources/bin/ctags/universal-ctags-darwin"
+    },
+    {
+      "tool": "ctags",
+      "url": "https://github.com/universal-ctags/ctags-win32/releases/download/2026-09-16/p6.2.20260913.0-2-gab95af1/ctags-2026-09-16_p6.2.20260913.0-2-gab95af1-x86.zip",
+      "sha256": "7b492c878fe230e61fe04ef8bc917c7c4d1b33c24b9e395fe56244481942a2a9",
+      "member": "ctags.exe",
+      "destination": "resources/bin/ctags/universal-ctags-win32.exe"
+    }
+  ]
+}

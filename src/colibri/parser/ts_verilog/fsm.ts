@@ -787,4 +787,3 @@ export class Paser_fsm_verilog extends Parser_fsm_base {
         return label_txt;
     }
 }
-

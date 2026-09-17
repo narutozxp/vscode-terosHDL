@@ -26,6 +26,7 @@ import {
 } from 'vscode';
 import { Ctags, CtagsManager, Symbol } from '../ctags';
 import { Logger, Log_Severity } from '../Logger';
+import { FileSymbolCache } from '../../index/fileCache';
 
 export default class VerilogDocumentSymbolProvider implements DocumentSymbolProvider {
 
@@ -33,7 +34,7 @@ export default class VerilogDocumentSymbolProvider implements DocumentSymbolProv
 
     private logger: Logger;
     private context: ExtensionContext;
-    constructor(logger: Logger, context: ExtensionContext) {
+    constructor(logger: Logger, context: ExtensionContext, private cache: FileSymbolCache = CtagsManager.fileCache) {
         this.logger = logger;
         this.context = context;
         // workspace.onDidSaveTextDocument(this.onSave);
@@ -41,6 +42,10 @@ export default class VerilogDocumentSymbolProvider implements DocumentSymbolProv
 
 
     onSave(doc) {
+        if (this.cache) {
+            this.cache.invalidate(doc.uri.fsPath);
+            return;
+        }
         CtagsManager.ctags.clearSymbols();
 
         CtagsManager.ctags.index()
@@ -57,6 +62,14 @@ export default class VerilogDocumentSymbolProvider implements DocumentSymbolProv
     }
 
     provideDocumentSymbols(document: TextDocument, token: CancellationToken): Thenable<DocumentSymbol[]> {
+        if (this.cache) {
+            const live = document.isDirty && ['verilog', 'systemverilog'].includes(document.languageId) &&
+                workspace.getConfiguration('zhdl', document.uri).get<boolean>('indexing.liveParsing', false);
+            return (live ? this.cache.getBuffer(document) : this.cache.get(document.uri.fsPath)).then(snapshot => {
+                if (token?.isCancellationRequested) { return []; }
+                return this.buildDocumentSymbolList(snapshot.symbols);
+            }).catch(error => { this.logger.log(`Outline indexing failed: ${error}`, Log_Severity.Error); return []; });
+        }
         return new Promise((resolve) => {
             this.logger.log("Symbols Requested: " + document.uri);
             let symbols: Symbol[] = [];

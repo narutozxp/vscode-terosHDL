@@ -29,6 +29,7 @@ import { Multi_project_manager } from 'colibri/project_manager/multi_project_man
 import * as rusthdl_lib from './lsp/rust_hdl';
 import * as verible_lib from './lsp/verible';
 import * as utils from '../utils/utils';
+import { ProjectLanguageService } from './index/projectService';
 
 export type e_provider = {
     completion: any;
@@ -45,6 +46,7 @@ export class LanguageProviderManager {
 
     private rusthdl: rusthdl_lib.Rusthdl_lsp | undefined;
     private verible: verible_lib.Verilbe_lsp | undefined;
+    private projectLanguageService: ProjectLanguageService;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor
@@ -61,11 +63,12 @@ export class LanguageProviderManager {
 
         this.ctagsManager = new CtagsManager(logger, this.context);
         this.ctagsManager.configure();
+        this.projectLanguageService = new ProjectLanguageService(CtagsManager.fileCache, manager, context, logger);
 
-        const comp_item_provider = new VerilogCompletionItemProvider(logger);
+        const comp_item_provider = new VerilogCompletionItemProvider(logger, CtagsManager.fileCache, this.projectLanguageService);
         const doc_provider = new VerilogDocumentSymbolProvider(logger, this.context);
         const hover_provider = new VerilogHoverProvider(logger);
-        const def_provider = new VerilogDefinitionProvider(logger);
+        const def_provider = new VerilogDefinitionProvider(logger, CtagsManager.fileCache, this.projectLanguageService);
 
         const provider_list: e_provider = {
             completion: comp_item_provider,
@@ -86,11 +89,13 @@ export class LanguageProviderManager {
         // TCL
         this.configure_tcl();
 
-        this.context.subscriptions.push(
-            vscode.workspace.onDidSaveTextDocument((doc) => {
-                this.provider_list.doc.onSave(doc);
-            })
-        );
+        const document = vscode.window.activeTextEditor?.document;
+        if (document && ['verilog', 'systemverilog'].includes(document.languageId)) { this.projectLanguageService.warm(document); }
+        this.context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(editor => {
+            if (editor && ['verilog', 'systemverilog'].includes(editor.document.languageId)) {
+                this.projectLanguageService.warm(editor.document);
+            }
+        }));
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -175,10 +180,14 @@ export class LanguageProviderManager {
         this.verible = new verible_lib.Verilbe_lsp(this.context, this.manager, fileListPath);
         is_alive = await this.verible.run();
 
-        if (is_alive === false) {
+        // A running server may still lack hover support (as in the bundled Verible).
+        if (!is_alive || !this.verible.supportsHover()) {
             this.context.subscriptions.push(
                 vscode.languages.registerHoverProvider(verilogSelector, this.provider_list.hover)
             );
+        }
+
+        if (is_alive === false) {
             this.context.subscriptions.push(
                 vscode.languages.registerDefinitionProvider(verilogSelector, this.provider_list.def)
             );

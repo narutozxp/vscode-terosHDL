@@ -25,6 +25,8 @@ import * as child from 'child_process';
 import { Logger, Log_Severity } from './Logger';
 import * as os from 'os';
 import * as path_lib from 'path';
+import { getSignalDescriptions } from './providers/signalDescriptions';
+import { FileSymbolCache } from '../index/fileCache';
 
 // Internal representation of a symbol
 export class Symbol {
@@ -36,6 +38,8 @@ export class Symbol {
     parentScope: string;
     parentType: string;
     isValid: boolean | undefined;
+    typeRef?: string;
+    outlineDetail?: string;
     constructor(name: string, type: string, pattern: string, startLine: number, parentScope: string, parentType: string, endLine?: number, isValid?: boolean) {
         this.name = name;
         this.type = type;
@@ -54,7 +58,8 @@ export class Symbol {
 
     getDocumentSymbol(): DocumentSymbol {
         let range = new Range(this.startPosition, this.endPosition);
-        return new DocumentSymbol(this.name, this.type, Symbol.getSymbolKind(this.type), range, range);
+        const detail = this.outlineDetail ?? (this.type === 'instance' && this.typeRef ? `instance ${this.typeRef}` : this.type);
+        return new DocumentSymbol(this.name, detail, Symbol.getSymbolKind(this.type), range, range);
     }
 
     static isContainer(type: string): boolean | undefined {
@@ -93,6 +98,7 @@ export class Symbol {
             case 'event': return SymbolKind.Event;
             case 'function': return SymbolKind.Function;
             case 'module': return SymbolKind.Module;
+            case 'instance': return SymbolKind.Field;
             case 'entity': return SymbolKind.Module; //VHDL
             case 'net': return SymbolKind.Variable;
             // Boolean uses a double headed arrow as symbol (kinda looks like a port)
@@ -172,12 +178,12 @@ export class Ctags {
             path_bin += "universal-ctags-win32.exe";
         }
 
-        let command: string = this.context.asAbsolutePath(path_bin) + ' --options='
-            + path_options + ' -f - --fields=+K --sort=no --excmd=n "' + filepath + '"';
-        this.logger.log(command, Log_Severity.Command);
+        const binary = this.context.asAbsolutePath(path_bin);
+        const args = ['--options=' + path_options, '-f', '-', '--fields=+K', '--sort=no', '--excmd=n', filepath];
+        this.logger.log([binary, ...args].join(' '), Log_Severity.Command);
         return new Promise((resolve, reject) => {
-            child.exec(command, {}, (error, stdout: string) => {
-                resolve(stdout);
+            child.execFile(binary, args, { maxBuffer: 16 * 1024 * 1024 }, (error, stdout: string) => {
+                if (error) { reject(error); } else { resolve(stdout); }
             });
         });
     }
@@ -185,20 +191,22 @@ export class Ctags {
     parseTagLine(line: string): Symbol[] | undefined {
         try {
             let name, type, pattern, lineNoStr, parentScope, parentType: string;
-            let scope: string[];
             let lineNo: number;
             let parts: string[] = line.split('\t');
             let names = parts[0].split(',');
             // pattern = parts[2];
             type = parts[3];
-            if (parts.length === 5) {
-                scope = parts[4].split(':');
-                parentType = scope[0];
-                parentScope = scope[1];
-            }
-            else {
-                parentScope = '';
-                parentType = '';
+            parentScope = '';
+            parentType = '';
+            let typeRef: string | undefined;
+            for (const field of parts.slice(4)) {
+                if (field.startsWith('typeref:')) {
+                    typeRef = field.replace(/^typeref:[^:]+:/, '');
+                } else if (/^(?:module|interface|class|package|function|task|block|program|struct|covergroup|checker|enum|property|sequence|namespace|entity|architecture|process):/.test(field)) {
+                    const separator = field.indexOf(':');
+                    parentType = field.slice(0, separator);
+                    parentScope = field.slice(separator + 1);
+                }
             }
             lineNoStr = parts[2];
             lineNo = Number(lineNoStr.slice(0, -2)) - 1;
@@ -208,6 +216,7 @@ export class Ctags {
                 const name_i = names[i].trim();
                 if (name_i !== '') {
                     let symbol = new Symbol(name_i, type, pattern, lineNo, parentScope, parentType, lineNo, false);
+                    symbol.typeRef = typeRef;
                     symbols.push(symbol);
                 }
             }
@@ -222,8 +231,11 @@ export class Ctags {
 
     buildSymbolsList(tags: string): Thenable<void> | undefined {
         try {
+            // Each ctags response is a complete snapshot, including concurrent refreshes.
+            this.symbols = [];
             if (tags === '') {
-                return;
+                this.isDirty = false;
+                return Promise.resolve();
             }
             // Parse ctags output
             let lines: string[] = tags.split(/\r?\n/);
@@ -241,6 +253,12 @@ export class Ctags {
             let match;
             let endPosition;
             let text = this.doc?.getText();
+            if (text && ['verilog', 'systemverilog'].includes(this.doc?.languageId ?? '')) {
+                const descriptions = getSignalDescriptions(text, this.symbols);
+                for (const symbol of this.symbols) {
+                    symbol.outlineDetail = descriptions.get(symbol);
+                }
+            }
             let eRegex: RegExp = /^(?![\r\n])\s*end(\w*)*[\s:]?/gm;
             while (match = eRegex.exec(<string>text)) {
                 if (match && typeof match[1] !== 'undefined') {
@@ -265,26 +283,43 @@ export class Ctags {
             }
             this.isDirty = false;
             return Promise.resolve();
-        } catch (e) { console.log(e); }
+        } catch (e) { this.logger.log(`Ctags symbol parsing failed: ${e}`); throw e; }
     }
 
-    index(): Thenable<void> {
-        return new Promise((resolve, reject) => {
-            this.execCtags(<string>this.doc?.uri.fsPath)
-                .then(output => this.buildSymbolsList(output))
-                .then(() => resolve());
-        });
+    async index(): Promise<void> {
+        const output = await this.execCtags(<string>this.doc?.uri.fsPath);
+        await this.buildSymbolsList(output);
     }
 
 }
 
 export class CtagsManager {
     static ctags: Ctags;
+    static fileCache: FileSymbolCache;
     private logger: Logger;
 
     constructor(logger: Logger, context: ExtensionContext) {
         this.logger = logger;
         CtagsManager.ctags = new Ctags(logger, context);
+        CtagsManager.fileCache = new FileSymbolCache(async (filePath, source) => {
+            const parser = new Ctags(logger, context);
+            const lines = source.split('\n');
+            const offsets: number[] = [0];
+            for (const line of lines) { offsets.push(offsets[offsets.length - 1] + line.length + 1); }
+            parser.doc = {
+                uri: Uri.file(filePath),
+                languageId: /\.(vhd|vhdl)$/i.test(filePath) ? 'vhdl' : /\.tcl$/i.test(filePath) ? 'tcl' :
+                    /\.(sv|svh)$/i.test(filePath) ? 'systemverilog' : 'verilog',
+                getText: () => source,
+                positionAt: (offset: number) => {
+                    let line = 0;
+                    while (line + 1 < offsets.length && offsets[line + 1] <= offset) { line++; }
+                    return new Position(line, offset - offsets[line]);
+                }
+            } as unknown as TextDocument;
+            await parser.index();
+            return parser.symbols;
+        });
     }
 
     configure() {
