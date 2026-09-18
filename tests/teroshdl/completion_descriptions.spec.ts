@@ -6,9 +6,11 @@ import { VerilogProjectParser } from '../../src/colibri/parser/ts_verilog/projec
 import { FileSymbolCache } from '../../src/teroshdl/features/language_provider/index/fileCache';
 import { ProjectLanguageService } from '../../src/teroshdl/features/language_provider/index/projectService';
 import { buildInstantiationSnippet } from '../../src/teroshdl/features/language_provider/index/instantiationSnippet';
+import { GlobalConfigManager } from '../../src/colibri/config/config_manager';
+
+beforeEach(() => GlobalConfigManager.newInstance(''));
 
 jest.mock('vscode', () => ({
-    workspace: { getConfiguration: jest.fn(() => ({ get: () => false })) },
     Position: class { constructor(public line: number, public character: number) {} },
     Range: class { constructor(public start: { line: number }) {} },
     MarkdownString: class { constructor(public value: string) {} },
@@ -183,8 +185,9 @@ describe('Project module completion and instantiation', () => {
 
 describe('Unsaved signal completion with live parsing enabled', () => {
     it('shows new signals and updated widths even with an incomplete following statement', async () => {
-        const vscode = jest.requireMock('vscode');
-        vscode.workspace.getConfiguration.mockReturnValue({ get: () => true });
+        const config = GlobalConfigManager.getInstance().get_config();
+        config.general.general.live_parsing = true;
+        GlobalConfigManager.getInstance().set_config(config);
         const cache = new FileSymbolCache(async () => []);
         // The production worker executes compiled JavaScript outside ts-jest.
         const { BufferLanguageService } = require('../../out/teroshdl/features/language_provider/index/bufferService');
@@ -206,7 +209,7 @@ describe('Unsaved signal completion with live parsing enabled', () => {
             expect(items.find(item => item.insertText === 'added').label)
                 .toEqual({ label: 'added', detail: ' reg [31:0]', description: 'reg' });
         } finally {
-            cache.dispose(); vscode.workspace.getConfiguration.mockReturnValue({ get: () => false });
+            cache.dispose();
         }
     });
 });

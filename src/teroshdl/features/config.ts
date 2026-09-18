@@ -72,14 +72,14 @@ export class Config_manager {
         this.emitterProject = emitterProject;
         this.configCheckerManager = configCheckerManager;
 
-        const activation_command = 'teroshdl.configuration';
+        const activation_command = 'zhdl.configuration';
         vscode.commands.registerCommand(activation_command + ".global", async () => await this.createWebviewGlobal());
         vscode.commands.registerCommand(activation_command + ".project",
             async (project, tabToOpen) => await this.createWebviewProject(project, tabToOpen));
 
-        vscode.commands.registerCommand("teroshdl.configuration.refresh", () => this.refresh());
-        vscode.commands.registerCommand("teroshdl.view.project.export_configuration", () => this.exportConfig());
-        vscode.commands.registerCommand("teroshdl.view.project.load_configuration", () => this.loadConfigFromFile());
+        vscode.commands.registerCommand("zhdl.configuration.refresh", () => this.refresh());
+        vscode.commands.registerCommand("zhdl.view.project.export_configuration", () => this.exportConfig());
+        vscode.commands.registerCommand("zhdl.view.project.load_configuration", () => this.loadConfigFromFile());
     }
 
     /**
@@ -240,7 +240,7 @@ export class Config_manager {
             currentProject.updateTaskManager();
         }
         catch (error) {}
-        vscode.commands.executeCommand("teroshdl.config.change_config");
+        vscode.commands.executeCommand("zhdl.config.change_config");
     }
 
     /**
@@ -373,7 +373,6 @@ export class Config_manager {
         }
     }
 }
-
 
 
 

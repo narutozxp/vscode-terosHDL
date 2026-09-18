@@ -32,7 +32,7 @@ export abstract class Generic_tool_handler {
     constructor(supported_tools: e_tools_general_select_tool[]) {
         this.supported_tools = supported_tools;
         const homedir = os.homedir();
-        this.working_directory = path_lib.join(homedir, '.teroshdl', 'build');
+        this.working_directory = path_lib.join(homedir, '.zhdl', 'build');
     }
 
     public abstract run(prj: t_project_definition, test_list: t_test_declaration[],

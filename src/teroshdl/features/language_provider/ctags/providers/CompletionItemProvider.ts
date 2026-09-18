@@ -23,7 +23,7 @@
 import {
     CompletionItemProvider, CompletionItem, TextDocument, Position,
     CancellationToken, CompletionContext, ProviderResult, CompletionItemKind,
-    Range, MarkdownString, SnippetString, workspace
+    Range, MarkdownString, SnippetString
 } from "vscode";
 import { Ctags, CtagsManager } from '../ctags';
 import { getKeywords } from './keywords';
@@ -36,6 +36,7 @@ import { verilogTokens } from 'colibri/parser/ts_verilog/project_model';
 import { getInstanceContext, InstanceContext } from '../../index/instanceContext';
 import { buildInstantiationSnippet } from '../../index/instantiationSnippet';
 import { getSignalDescriptions } from './signalDescriptions';
+import { getIndexingSettings } from '../../index/settings';
 
 export default class VerilogCompletionItemProvider implements CompletionItemProvider {
 
@@ -53,7 +54,7 @@ export default class VerilogCompletionItemProvider implements CompletionItemProv
         const verilog = ['verilog', 'systemverilog'].includes(document.languageId);
         const version = document.version;
         const source = document.getText();
-        const live = verilog && workspace?.getConfiguration('zhdl', document.uri).get<boolean>('indexing.liveParsing', false) === true;
+        const live = verilog && getIndexingSettings().liveParsing;
         let modules: VerilogModule[] = [];
         let symbols: Ctags['symbols'] = [];
         let savedSource: string | undefined;

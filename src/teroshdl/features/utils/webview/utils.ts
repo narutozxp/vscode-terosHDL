@@ -22,7 +22,7 @@ import { posix } from 'path';
 import { TextEncoder } from 'util';
 
 // export const CONFIG_FILE_NAME = 'teros-hdl.config.json';
-export const USER_CONFIG_FILE_NAME = 'user.teros-hdl.config.json';
+export const USER_CONFIG_FILE_NAME = 'user.zhdl.config.json';
 
 type teros_hdl_config = {
   accents: Record<string, string>;

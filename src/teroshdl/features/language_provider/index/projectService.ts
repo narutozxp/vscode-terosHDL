@@ -5,6 +5,8 @@ import type { VerilogModule } from 'colibri/parser/ts_verilog/project_model';
 import { FileSymbolCache, fileKey } from './fileCache';
 import { ProjectSymbolIndex } from './projectIndex';
 import type { Logger } from '../ctags/Logger';
+import { GlobalConfigManager } from 'colibri/config/config_manager';
+import { getIndexingSettings } from './settings';
 
 const sourceGlob = '**/*.{v,sv,vh,svh}';
 const excludedGlob = '**/{node_modules,.git,out,dist,build}/**';
@@ -16,6 +18,7 @@ export class ProjectLanguageService {
     private externalDirectories = new Set<string>();
     private bufferModels = new Map<string, { version: number; models: Promise<VerilogModule[]> }>();
     private disposed = false;
+    private configSubscription: { dispose(): void };
 
     constructor(private cache: FileSymbolCache, private manager: Multi_project_manager,
         private context: vscode.ExtensionContext, private logger: Logger) {
@@ -28,20 +31,21 @@ export class ProjectLanguageService {
         }));
         context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => this.bufferModels.delete(document.uri.toString())));
         context.subscriptions.push(vscode.workspace.onDidChangeTextDocument?.(event => {
-            if (vscode.workspace.getConfiguration('zhdl', event.document.uri).get<boolean>('indexing.liveParsing', false)) {
+            if (getIndexingSettings().liveParsing) {
                 cache.buffers.changed(event.document);
             }
         }) ?? { dispose() {} });
         context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => cache.buffers.close(document)));
-        context.subscriptions.push(vscode.workspace.onDidChangeConfiguration?.(event => {
-            if (!event.affectsConfiguration('zhdl.indexing.liveParsing')) { return; }
+        this.configSubscription = GlobalConfigManager.getInstance().onDidChange(() => {
             this.bufferModels.clear();
+            this.workspaceFiles.clear();
             for (const document of vscode.workspace.textDocuments) {
-                if (!vscode.workspace.getConfiguration('zhdl', document.uri).get<boolean>('indexing.liveParsing', false)) {
+                if (!getIndexingSettings().liveParsing) {
                     cache.buffers.close(document);
                 }
             }
-        }) ?? { dispose() {} });
+        });
+        context.subscriptions.push(this.configSubscription);
         context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => this.workspaceFiles.clear()));
     }
 
@@ -75,7 +79,7 @@ export class ProjectLanguageService {
                 return { id: `project:${project.get_name()}`, files };
             }
         }
-        const scope = vscode.workspace.getConfiguration('zhdl', document.uri).get<string>('indexing.scope', 'openFiles');
+        const scope = getIndexingSettings().scope;
         if (scope !== 'workspace') {
             const files = [...new Set([
                 ...vscode.workspace.textDocuments.filter(open => open.uri.scheme === 'file' &&
@@ -105,7 +109,7 @@ export class ProjectLanguageService {
         const key = document.uri.toString();
         let buffer = this.bufferModels.get(key);
         if (!buffer || buffer.version !== document.version) {
-            const live = vscode.workspace.getConfiguration('zhdl', document.uri).get<boolean>('indexing.liveParsing', false) === true;
+            const live = getIndexingSettings().liveParsing;
             buffer = { version: document.version, models: live ? this.cache.buffers.get(document).then(snapshot => snapshot.modules) :
                 this.cache.parseBuffer(document.getText(), document.uri.fsPath) };
             this.bufferModels.set(key, buffer);
@@ -125,5 +129,6 @@ export class ProjectLanguageService {
 
     dispose(): void {
         this.disposed = true; this.index.dispose(); this.workspaceFiles.clear(); this.bufferModels.clear();
+        this.configSubscription.dispose();
     }
 }

@@ -99,7 +99,7 @@ export class Tree_view_manager {
         }
 
         if (eventType === e_event.SAVE_SETTINGS) {
-            vscode.commands.executeCommand('teroshdl.configuration.refresh');
+            vscode.commands.executeCommand('zhdl.configuration.refresh');
         }
 
         for (const view of viewList) {
@@ -151,7 +151,7 @@ export function forceRefresh(rustHDLFilePath: string, veribleLSFilePath: string)
 
         const oldPathList = [
             path_lib.join(os.homedir(), '.vhdl_ls.toml'),
-            path_lib.join(os.homedir(), '.verible-teroshdl.filelist')
+            path_lib.join(os.homedir(), '.verible-zhdl.filelist')
         ];
 
         for (const oldPath of oldPathList) {
@@ -166,8 +166,8 @@ export function forceRefresh(rustHDLFilePath: string, veribleLSFilePath: string)
             .get_selected_project()
             .saveFileList(veribleLSFilePath, hdlVersion, ignoreVunit, vunitPath);
 
-        vscode.commands.executeCommand('teroshdl.vhdlls.restart');
-        vscode.commands.executeCommand('teroshdl.verible.restart');
+        vscode.commands.executeCommand('zhdl.vhdlls.restart');
+        vscode.commands.executeCommand('zhdl.verible.restart');
     } catch (error) {
         return;
     }

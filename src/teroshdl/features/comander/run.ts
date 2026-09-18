@@ -40,9 +40,9 @@ export class Comander {
     }
 
     public init() {
-        vscode.commands.registerCommand("teroshdl.open", (ags) => this.open_file(ags));
-        vscode.commands.registerCommand("teroshdl.waveform", (ags) => this.open_waveform(ags));
-        vscode.commands.registerCommand("teroshdl.openwebview", (ags) => this.open_webview(ags, this.report_webview));
+        vscode.commands.registerCommand("zhdl.open", (ags) => this.open_file(ags));
+        vscode.commands.registerCommand("zhdl.waveform", (ags) => this.open_waveform(ags));
+        vscode.commands.registerCommand("zhdl.openwebview", (ags) => this.open_webview(ags, this.report_webview));
     }
 
     private open_file(args: vscode.Uri) {

@@ -26,8 +26,8 @@ import { e_iconType, e_reportType, e_taskExecutionType, e_taskState, e_taskType,
 import { check_if_file, get_directory } from 'colibri/utils/file_utils';
 import * as fs from 'fs';
 
-export const VIEW_ID = "teroshdl-view-tasks";
-const URISTRINGINIT = "teroshdl:/";
+export const VIEW_ID = "zhdl-view-tasks";
+const URISTRINGINIT = "zhdl:/";
 
 function msToTime(seconds: number) {
     if (seconds > 1500000000) {
@@ -95,7 +95,7 @@ export class Task extends vscode.TreeItem {
                 this.iconPath = get_icon("search");
             }
             this.command = {
-                command: "teroshdl.view.tasks.run",
+                command: "zhdl.view.tasks.run",
                 title: "Run",
                 arguments: [this],
             };
@@ -113,7 +113,7 @@ export class Task extends vscode.TreeItem {
             const waveformPath = getWaveformPath(workingDirectory);
             this.command = {
                 title: 'Open Waveform (If available)',
-                command: 'teroshdl.waveform',
+                command: 'zhdl.waveform',
                 arguments: [waveformPath ? vscode.Uri.file(waveformPath) : undefined]
             };
         }
@@ -121,7 +121,7 @@ export class Task extends vscode.TreeItem {
             this.iconPath = get_icon("gear");
             this.command = {
                 title: 'Settings',
-                command: 'teroshdl.configuration.project',
+                command: 'zhdl.configuration.project',
                 arguments: [undefined, "quartus"]
             };
         }
@@ -129,7 +129,7 @@ export class Task extends vscode.TreeItem {
             this.iconPath = get_icon("console");
             this.command = {
                 title: 'Open Console',
-                command: 'teroshdl.view.tasks.console',
+                command: 'zhdl.view.tasks.console',
                 arguments: []
             };
         }
@@ -138,7 +138,7 @@ export class Task extends vscode.TreeItem {
             this.iconPath = get_icon("verilog");
             this.command = {
                 title: 'Settings',
-                command: 'teroshdl.view.tasks.device',
+                command: 'zhdl.view.tasks.device',
                 arguments: []
             };
         }

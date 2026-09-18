@@ -28,6 +28,11 @@
                                     {%- endfor %}
                             </select>
                         </div>
+                        {%- if type_declaration[tp0]["pages"][tp1][tp2]["help"] %}
+                        <div class="setting-item-description setting-control-description">
+                            {{type_declaration[tp0]["pages"][tp1][tp2]["help"]}}
+                        </div>
+                        {%- endif %}
                     </div>
                   {# Boolean #}
                   {%- elif type_declaration[tp0]["pages"][tp1][tp2]["type"] == "boolean" %}
@@ -39,6 +44,11 @@
                                 <span class="markConfig" id="mark_{{tp0}}-{{tp1}}-{{tp2}}"></span>
                             </label>
                         </div>
+                        {%- if type_declaration[tp0]["pages"][tp1][tp2]["help"] %}
+                        <div class="setting-item-description setting-control-description setting-checkbox-description">
+                            {{type_declaration[tp0]["pages"][tp1][tp2]["help"]}}
+                        </div>
+                        {%- endif %}
                     </div>
                   {# String #}
                   {%- elif type_declaration[tp0]["pages"][tp1][tp2]["type"] == "string" %}

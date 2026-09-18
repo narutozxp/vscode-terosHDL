@@ -6,94 +6,94 @@
         "viewsContainers": {
             "activitybar": [
                 {
-                    "id": "teroshdl-project",
+                    "id": "zhdl-project",
                     "title": "ZHDL",
                     "icon": "resources/images/zhdl-sidebar.svg"
                 }
             ],
             "panel": [
                 {
-                    "id": "teroshdl-messages-view",
+                    "id": "zhdl-messages-view",
                     "title": "ZHDL: log report",
                     "icon": "fancy.icon"
                 },
                 {
-                    "id": "teroshdl-timing-view",
+                    "id": "zhdl-timing-view",
                     "title": "ZHDL: Timing",
                     "icon": "fancy.icon"
                 }
             ]
         },
         "views": {
-            "teroshdl-project": [
+            "zhdl-project": [
                 {
-                    "id": "teroshdl-project",
+                    "id": "zhdl-project",
                     "name": "Projects"
                 },
                 {
-                    "id": "teroshdl-view-source",
+                    "id": "zhdl-view-source",
                     "name": "Files"
                 },
                 {
-                    "id": "teroshdl-view-dependency",
+                    "id": "zhdl-view-dependency",
                     "name": "Hierarchy"
                 },
                 {
-                    "id": "teroshdl-view-watcher",
+                    "id": "zhdl-view-watcher",
                     "name": "Watchers"
                 },
                 {
-                    "id": "teroshdl-view-tasks",
+                    "id": "zhdl-view-tasks",
                     "name": "Tasks"
                 },
                 {
-                    "id": "teroshdl-view-runs",
+                    "id": "zhdl-view-runs",
                     "name": "Runs"
                 },
                 {
-                    "id": "teroshdl-view-output",
+                    "id": "zhdl-view-output",
                     "name": "Outputs"
                 },
                 {
-                    "id": "teroshdl-view-ip-catalog",
+                    "id": "zhdl-view-ip-catalog",
                     "name": "IP Catalog"
                 },
                 {
-                    "id": "teroshdl-view-actions",
+                    "id": "zhdl-view-actions",
                     "name": "Configuration"
                 }
             ],
-            "teroshdl-messages-view": [
+            "zhdl-messages-view": [
                 {
                     "type": "webview",
-                    "id": "teroshdl-report-logs",
+                    "id": "zhdl-report-logs",
                     "name": "Report Logs"
                 }
             ],
-            "teroshdl-timing-view": [
+            "zhdl-timing-view": [
                 {
                     "type": "webview",
-                    "id": "teroshdl-view-timing",
+                    "id": "zhdl-view-timing",
                     "name": "Timing Report"
                 }
             ]
         },
         "viewsWelcome": [
             {
-                "view": "teroshdl-project",
-                "contents": "No ZHDL project are open.\n[Add Project](command:teroshdl.view.project.add)\nTo learn more about how to [setup a ZHDL project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/)."
+                "view": "zhdl-project",
+                "contents": "No ZHDL project are open.\n[Add Project](command:zhdl.view.project.add)\nTo learn more about how to [setup a ZHDL project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/)."
             },
             {
-                "view": "teroshdl-view-source",
+                "view": "zhdl-view-source",
                 "contents": "Learn more about how to [add files and libraries to a project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/sources)."
             },
             {
-                "view": "teroshdl-view-dependency",
+                "view": "zhdl-view-dependency",
                 "contents": "Learn more about how to [setup ZHDL to compute Hierarchy](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/hierarchy)."
             },
             {
-                "view": "teroshdl-view-actions",
-                "contents": "[Verify Setup](command:teroshdl.verifySetup)\n[Open Global Settings Menu](command:teroshdl.configuration.global)\n[Export Settings](command:teroshdl.view.project.export_configuration)\n[Load Settings](command:teroshdl.view.project.load_configuration)\n[Documentation](command:teroshdl.documentation)"
+                "view": "zhdl-view-actions",
+                "contents": "[Verify Setup](command:zhdl.verifySetup)\n[Open Global Settings Menu](command:zhdl.configuration.global)\n[Export Settings](command:zhdl.view.project.export_configuration)\n[Load Settings](command:zhdl.view.project.load_configuration)\n[Documentation](command:zhdl.documentation)"
             }
       ],
 {% filter indent(width=8) %}
@@ -104,7 +104,7 @@
 {% endfilter %}
         "keybindings": [
             {
-                "command": "teroshdl.go_to_parent",
+                "command": "zhdl.go_to_parent",
                 "key": "alt+backspace",
                 "mac": "command+delete",
                 "when": "editorTextFocus"

@@ -42,8 +42,11 @@
             <li>完整构建按顺序执行，任一步失败时停止构建。</li>
         </ul>
         <h2>配置文件</h2>
-        <p>全局设置保存在 <code>~/.teroshdl2_config.json</code>，项目列表保存在
-            <code>~/.teroshdl2_prj.json</code>。当前 ZHDL 与原 TerosHDL 在同一环境、同一用户下共享这些文件。</p>
+        <p>本次更新统一 ZHDL 的 Output 通道、菜单命令和视图标识，并将索引范围及试验性实时解析移入
+            Open Global Settings Menu → General。英文 README 为主文档，同时提供中文版本。
+            临时诊断启动配置与运行时钩子已移除，本地调试使用 Run ZHDL。</p>
+        <p>全局设置保存在 <code>~/.zhdl_config.json</code>，项目列表保存在
+            <code>~/.zhdl_prj.json</code>，与原 TerosHDL 独立。可通过 Load Settings 手动导入旧全局设置。</p>
         <p><a href="https://github.com/narutozxp/vscode-terosHDL">项目文档</a> ·
             <a href="https://github.com/narutozxp/vscode-terosHDL/issues">问题反馈</a></p>
         <p>本项目基于 <a href="https://github.com/TerosTechnology/vscode-terosHDL">TerosHDL</a> 修改，感谢上游维护者与贡献者。</p>

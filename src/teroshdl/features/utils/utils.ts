@@ -213,7 +213,7 @@ export function getVSCodeWorkspaceStorage(context: vscode.ExtensionContext): str
     } else if (context.globalStorageUri) {
         folderPath = context.globalStorageUri.fsPath;
     }
-    const terosHdlPath = path_lib.join(folderPath, 'teroshdl');
+    const terosHdlPath = path_lib.join(folderPath, 'zhdl');
 
     if (!fs.existsSync(terosHdlPath)) {
         fs.mkdirSync(terosHdlPath, { recursive: true });

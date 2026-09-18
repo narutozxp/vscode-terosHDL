@@ -55,6 +55,17 @@ export class ConfigManager {
  */
 export class GlobalConfigManager extends ConfigManager {
     private static instance: GlobalConfigManager;
+    private changeListeners = new Set<() => void>();
+
+    public onDidChange(listener: () => void): { dispose(): void } {
+        this.changeListeners.add(listener);
+        return { dispose: () => { this.changeListeners.delete(listener); } };
+    }
+
+    public override set_config(config: e_config): void {
+        super.set_config(config);
+        for (const listener of this.changeListeners) { listener(); }
+    }
 
     /**
      * Creates a new instance of GlobalConfigManager and sets the sync file path and default configuration.
@@ -115,4 +126,3 @@ export class GlobalConfigManager extends ConfigManager {
         save_file_sync(this.sync_file_path, config_string);
     }
 }
-

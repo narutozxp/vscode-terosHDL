@@ -84,69 +84,69 @@ export class Tasks_manager extends BaseView {
      * Sets up the commands for the task manager.
      */
     set_commands() {
-        vscode.commands.registerCommand("teroshdl.view.tasks.report", async (item) =>
+        vscode.commands.registerCommand("zhdl.view.tasks.report", async (item) =>
             await this.openReport(item, e_reportType.REPORT));
-        vscode.commands.registerCommand("teroshdl.view.tasks.timing_analyzer", async (item) =>
+        vscode.commands.registerCommand("zhdl.view.tasks.timing_analyzer", async (item) =>
             await this.openReport(item, e_reportType.TIMINGANALYZER));
-        vscode.commands.registerCommand("teroshdl.view.tasks.technology_map_viewer", async (item) =>
+        vscode.commands.registerCommand("zhdl.view.tasks.technology_map_viewer", async (item) =>
             await this.openReport(item, e_reportType.TECHNOLOGYMAPVIEWER));
-        vscode.commands.registerCommand("teroshdl.view.tasks.snapshotviewer", async (item) =>
+        vscode.commands.registerCommand("zhdl.view.tasks.snapshotviewer", async (item) =>
             await this.openReport(item, e_reportType.SNAPSHOPVIEWER));
-        vscode.commands.registerCommand("teroshdl.view.tasks.logs", async (item) =>
+        vscode.commands.registerCommand("zhdl.view.tasks.logs", async (item) =>
             await this.openReport(item, e_reportType.REPORTDB));
 
-        vscode.commands.registerCommand("teroshdl.view.tasks.stop", () => this.stop());
-        vscode.commands.registerCommand("teroshdl.view.tasks.run", async (item) => {
+        vscode.commands.registerCommand("zhdl.view.tasks.stop", () => this.stop());
+        vscode.commands.registerCommand("zhdl.view.tasks.run", async (item) => {
             const output = await this.run(item);
             return output;
         });
-        vscode.commands.registerCommand("teroshdl.view.tasks.clean", () => this.clean());
-        vscode.commands.registerCommand("teroshdl.view.tasks.device", () => this.device());
-        vscode.commands.registerCommand("teroshdl.view.tasks.console", () => this.openConsole());
-        vscode.commands.registerCommand("teroshdl.view.tasks.listProjectFiles",
+        vscode.commands.registerCommand("zhdl.view.tasks.clean", () => this.clean());
+        vscode.commands.registerCommand("zhdl.view.tasks.device", () => this.device());
+        vscode.commands.registerCommand("zhdl.view.tasks.console", () => this.openConsole());
+        vscode.commands.registerCommand("zhdl.view.tasks.listProjectFiles",
             async () => await this.listProjectFiles());
 
         // Quartus Commands
-        vscode.commands.registerCommand("teroshdl.project.quartus.rtlAnalyzer",
+        vscode.commands.registerCommand("zhdl.project.quartus.rtlAnalyzer",
             () => this.runQuartusTask(e_taskType.QUARTUS_RTL_ANALYZER));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.compileDesigh",
+        vscode.commands.registerCommand("zhdl.project.quartus.compileDesigh",
             () => this.runQuartusTask(e_taskType.QUARTUS_COMPILEDESIGN));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.analysisAndSynthesis",
+        vscode.commands.registerCommand("zhdl.project.quartus.analysisAndSynthesis",
             () => this.runQuartusTask(e_taskType.QUARTUS_ANALYSISSYNTHESIS));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.analysisAndElaboration",
+        vscode.commands.registerCommand("zhdl.project.quartus.analysisAndElaboration",
             () => this.runQuartusTask(e_taskType.QUARTUS_ANALYSISELABORATION));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.synthesis",
+        vscode.commands.registerCommand("zhdl.project.quartus.synthesis",
             () => this.runQuartusTask(e_taskType.QUARTUS_SYNTHESIS));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.earlyTimingAnalysis",
+        vscode.commands.registerCommand("zhdl.project.quartus.earlyTimingAnalysis",
             () => this.runQuartusTask(e_taskType.QUARTUS_EARLYTIMINGANALYSIS));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.fitter",
+        vscode.commands.registerCommand("zhdl.project.quartus.fitter",
             () => this.runQuartusTask(e_taskType.QUARTUS_FITTER));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.fitterImplement",
+        vscode.commands.registerCommand("zhdl.project.quartus.fitterImplement",
             () => this.runQuartusTask(e_taskType.QUARTUS_FITTERIMPLEMENT));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.plan",
+        vscode.commands.registerCommand("zhdl.project.quartus.plan",
             () => this.runQuartusTask(e_taskType.QUARTUS_PLAN));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.place",
+        vscode.commands.registerCommand("zhdl.project.quartus.place",
             () => this.runQuartusTask(e_taskType.QUARTUS_PLACE));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.route",
+        vscode.commands.registerCommand("zhdl.project.quartus.route",
             () => this.runQuartusTask(e_taskType.QUARTUS_ROUTE));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.fitterFinalize",
+        vscode.commands.registerCommand("zhdl.project.quartus.fitterFinalize",
             () => this.runQuartusTask(e_taskType.QUARTUS_FITTERFINALIZE));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.timingAnalysisSignoff",
+        vscode.commands.registerCommand("zhdl.project.quartus.timingAnalysisSignoff",
             () => this.runQuartusTask(e_taskType.QUARTUS_TIMING));
         
-        vscode.commands.registerCommand("teroshdl.project.quartus.assembler",
+        vscode.commands.registerCommand("zhdl.project.quartus.assembler",
             () => this.runQuartusTask(e_taskType.QUARTUS_ASSEMBLER));
     }
 
@@ -559,7 +559,7 @@ export class Tasks_manager extends BaseView {
         if (report.artifact_type === e_artifact_type.SUMMARY
             && report.element_type === e_element_type.HTML) {
             const content = report.content;
-            vscode.commands.executeCommand('teroshdl.openwebview', content);
+            vscode.commands.executeCommand('zhdl.openwebview', content);
         }
 
         if (report.artifact_type === e_artifact_type.LOG
@@ -577,10 +577,10 @@ export class Tasks_manager extends BaseView {
     setStatusBarText(text: string | undefined) {
         if (this.statusBar !== undefined) {
             if (text === undefined) {
-                this.statusBar.text = `$(sync~spin) Running TerosHDL task...`;
+                this.statusBar.text = `$(sync~spin) Running ZHDL task...`;
             }
             else {
-                this.statusBar.text = `$(sync~spin) Running TerosHDL task: ${text}...`;
+                this.statusBar.text = `$(sync~spin) Running ZHDL task: ${text}...`;
             }
         }
     }

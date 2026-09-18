@@ -39,7 +39,7 @@ export class Verilbe_lsp {
         this.manager = manager;
 
         this.context.subscriptions.push(
-            vscode.commands.registerCommand('teroshdl.verible.restart', async () => {
+            vscode.commands.registerCommand('zhdl.verible.restart', async () => {
                 // if (this.client != undefined && this.client.isRunning() && this.client.state === State.Running) {
                 //     try {
                 //         this.client.stop().finally(async () => {

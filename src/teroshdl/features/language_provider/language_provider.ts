@@ -138,7 +138,7 @@ export class LanguageProviderManager {
             this.rusthdl = new rusthdl_lib.Rusthdl_lsp(this.context, this.manager, fileListPath);
             is_alive = await this.rusthdl.run_rusthdl();
         } else {
-            this.context.subscriptions.push(vscode.commands.registerCommand('teroshdl.vhdlls.restart', async () => {}));
+            this.context.subscriptions.push(vscode.commands.registerCommand('zhdl.vhdlls.restart', async () => {}));
         }
 
         if (is_alive === false && enable_vhdl_provider === true) {
@@ -192,7 +192,7 @@ export class LanguageProviderManager {
                 vscode.languages.registerDefinitionProvider(verilogSelector, this.provider_list.def)
             );
 
-            this.context.subscriptions.push(vscode.commands.registerCommand('teroshdl.verible.restart', async () => {}));
+            this.context.subscriptions.push(vscode.commands.registerCommand('zhdl.verible.restart', async () => {}));
         }
     }
 

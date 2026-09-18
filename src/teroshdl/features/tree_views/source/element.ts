@@ -24,13 +24,13 @@ import { ThemeColor } from "vscode";
 import { e_source_type } from "colibri/project_manager/common";
 import { Multi_project_manager } from "colibri/project_manager/multi_project_manager";
 
-export const VIEW_ID = "teroshdl-view-source";
+export const VIEW_ID = "zhdl-view-source";
 enum SOURCE_TREE_ELEMENT {
     SOURCE = "source",
     LIBRARY = "library",
 }
 
-const URISTRINGINIT = "teroshdl:/";
+const URISTRINGINIT = "zhdl:/";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Elements
@@ -84,7 +84,7 @@ export class Source_tree_element extends vscode.TreeItem {
 
             this.command = {
                 title: 'Open file',
-                command: 'teroshdl.view.source.open',
+                command: 'zhdl.view.source.open',
                 arguments: [name]
             };
         }

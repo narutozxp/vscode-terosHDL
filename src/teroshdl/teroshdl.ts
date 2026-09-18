@@ -48,8 +48,8 @@ import { GlobalConfigManager } from 'colibri/config/config_manager';
 import { configCheckerManager } from './features/configChecker/manager';
 import { getVSCodeWorkspaceStorage } from './features/utils/utils';
 
-const CONFIG_FILENAME = '.teroshdl2_config.json';
-const PRJ_FILENAME = '.teroshdl2_prj.json';
+const CONFIG_FILENAME = '.zhdl_config.json';
+const PRJ_FILENAME = '.zhdl_prj.json';
 
 export class Teroshdl {
     private context: vscode.ExtensionContext;
@@ -218,4 +218,3 @@ export class Teroshdl {
         await this.languageProviderManager.deactivate();
     }
 }
-

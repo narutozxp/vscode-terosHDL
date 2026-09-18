@@ -6,7 +6,7 @@
     ],
     "version": "https://github.com/emilast/vscode-logfile-highlighter/commit/fc571bd87b33bb69d3bdc0052f94face723ee4f7",
     "name": "Log file",
-    "scopeName": "logQuartus.log",
+    "scopeName": "logZHDL.log",
     "patterns": [
         {
             "match": "\\b(Trace)\\b:",

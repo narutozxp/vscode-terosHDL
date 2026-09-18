@@ -43,8 +43,8 @@ export class Watcher_manager extends BaseView{
     }
 
     set_commands() {
-        vscode.commands.registerCommand("teroshdl.view.watcher.add", (item) => this.add(item));
-        vscode.commands.registerCommand("teroshdl.view.watcher.delete", (item) => this.delete(item));
+        vscode.commands.registerCommand("zhdl.view.watcher.add", (item) => this.add(item));
+        vscode.commands.registerCommand("zhdl.view.watcher.delete", (item) => this.delete(item));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,4 +91,3 @@ export class Watcher_manager extends BaseView{
         this.tree.refresh();
     }
 }
-

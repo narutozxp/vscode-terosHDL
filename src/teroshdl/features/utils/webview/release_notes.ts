@@ -25,7 +25,7 @@ export class ReleaseNotesWebview extends WebviewController<Record<string, unknow
   }
 
   get id(): string {
-    return 'terosHDL.releaseNotes';
+    return 'zhdl.releaseNotes';
   }
 
   get title(): string {

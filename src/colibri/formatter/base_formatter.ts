@@ -38,10 +38,9 @@ export abstract class Base_formatter {
         return {
             displayName: this.constructor.name,
             binaryPath: '',
-            messageList: ["The formatter is built into TerosHDL. Skipping configuration check."],
+            messageList: ["The formatter is built into ZHDL. Skipping configuration check."],
             successfulFind: true,
             successfulConfig: true
         };
     }
 }
-

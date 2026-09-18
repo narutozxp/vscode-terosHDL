@@ -33,27 +33,27 @@
   title: "Add project"
   icon: add
   where: ["view/title"]
-  when: "view == teroshdl-project"
+  when: "view == zhdl-project"
 
 - name: configuration.project
   title: "Open Project Settings"
   icon: gear
   where: ["view/item/context"]
-  when: "viewItem == project && view == teroshdl-project"
+  when: "viewItem == project && view == zhdl-project"
   group: "inline"
 
 - name: view.project.delete
   title: "Delete project"
   icon: chrome-close
   where: ["view/item/context"]
-  when: "viewItem == project && view == teroshdl-project"
+  when: "viewItem == project && view == zhdl-project"
   group: "inline"
 
 - name: view.project.rename
   title: "Rename project"
   icon: edit
   where: ["view/item/context"]
-  when: "viewItem == project && view == teroshdl-project"
+  when: "viewItem == project && view == zhdl-project"
   group: "inline"
 
 ## Source
@@ -61,53 +61,53 @@
   title: "Save Project"
   icon: save
   where: ["view/title"]
-  when: "view == teroshdl-view-source"
+  when: "view == zhdl-view-source"
 
 - name: view.source.search
   title: "Search"
   icon: search
   where: ["view/title"]
-  when: "view == teroshdl-view-source"
+  when: "view == zhdl-view-source"
 
 - name: view.source.add
   title: "Add"
   icon: add
   where: ["view/title"]
-  when: "view == teroshdl-view-source"
+  when: "view == zhdl-view-source"
 
 - name: view.source.add_source_to_library
   title: "Add to library"
   icon: add
   where: ["view/item/context"]
-  when: "viewItem == library && view == teroshdl-view-source"
+  when: "viewItem == library && view == zhdl-view-source"
   group: "inline"
 
 - name: view.source.delete_library
   title: "Delete library"
   icon: dash
   where: ["view/item/context"]
-  when: "viewItem == library && view == teroshdl-view-source"
+  when: "viewItem == library && view == zhdl-view-source"
   group: "inline"
 
 - name: view.source.properties
   title: "File Properties"
   icon: gear
   where: ["view/item/context"]
-  when: "viewItem == source && view == teroshdl-view-source"
+  when: "viewItem == source && view == zhdl-view-source"
   group: "inline"
 
 - name: view.source.delete_source
   title: "Delete source"
   icon: dash
   where: ["view/item/context"]
-  when: "viewItem == source && view == teroshdl-view-source"
+  when: "viewItem == source && view == zhdl-view-source"
   group: "inline"
 
 - name: view.source.select_toplevel
   title: "Select source as toplevel"
   icon: check
   where: ["view/item/context"]
-  when: "viewItem == source && view == teroshdl-view-source"
+  when: "viewItem == source && view == zhdl-view-source"
   group: "inline"
 
 ## Dependency
@@ -115,44 +115,44 @@
   title: "Refresh"
   icon: refresh
   where: ["view/title"]
-  when: "view == teroshdl-view-dependency"
+  when: "view == zhdl-view-dependency"
 
 - name: view.dependency.schematic
   title: "Schematic viewer"
   icon: list-tree
   where: ["view/title"]
-  when: "view == teroshdl-view-dependency"
+  when: "view == zhdl-view-dependency"
 
 - name: view.dependency.viewer
   title: "Dependencies viewer"
   icon: dep
   where: ["view/title"]
-  when: "view == teroshdl-view-dependency"
+  when: "view == zhdl-view-dependency"
 
 ## Runs
 - name: view.runs.run_all
   title: "Run all"
   icon: run-all
   where: ["view/title"]
-  when: "view == teroshdl-view-runs"
+  when: "view == zhdl-view-runs"
 
 - name: view.runs.stop
   title: "Stop"
   icon: stop
   where: ["view/title"]
-  when: "view == teroshdl-view-runs"
+  when: "view == zhdl-view-runs"
 
 - name: view.runs.refresh
   title: "Refresh"
   icon: refresh
   where: ["view/title"]
-  when: "view == teroshdl-view-runs"
+  when: "view == zhdl-view-runs"
 
 - name: view.runs.run
   title: "ZHDL: Run Tool"
   icon: run
   where: ["view/item/context"]
-  when: "viewItem == run && view == teroshdl-view-runs"
+  when: "viewItem == run && view == zhdl-view-runs"
   group: "inline"
 
 ## Tasks
@@ -160,47 +160,47 @@
   title: "Stop"
   icon: stop
   where: ["view/title"]
-  when: "view == teroshdl-view-tasks && view == teroshdl-view-tasks"
+  when: "view == zhdl-view-tasks && view == zhdl-view-tasks"
 
 - name: view.tasks.clean
   title: "Clean project"
   icon: trash
   where: ["view/title"]
-  when: "view == teroshdl-view-tasks && view == teroshdl-view-tasks"
+  when: "view == zhdl-view-tasks && view == zhdl-view-tasks"
 
 - name: view.tasks.logs
   title: "Open Log"
   icon: database
   where: ["view/item/context"]
-  when: "viewItem =~ /logs/ && view == teroshdl-view-tasks"
+  when: "viewItem =~ /logs/ && view == zhdl-view-tasks"
   group: "inline"
 
 - name: view.tasks.report
   title: "Open Report"
   icon: output
   where: ["view/item/context"]
-  when: "viewItem =~ /report/ && view == teroshdl-view-tasks"
+  when: "viewItem =~ /report/ && view == zhdl-view-tasks"
   group: "inline"
 
 - name: view.tasks.timing_analyzer
   title: "Open Timing Analyzer"
   icon: watch
   where: ["view/item/context"]
-  when: "viewItem =~ /timinganalyzer/ && view == teroshdl-view-tasks"
+  when: "viewItem =~ /timinganalyzer/ && view == zhdl-view-tasks"
   group: "inline"
 
 - name: view.tasks.technology_map_viewer
   title: "Open Technology Map Viewer"
   icon: search
   where: ["view/item/context"]
-  when: "viewItem =~ /technologymapviewer/ && view == teroshdl-view-tasks"
+  when: "viewItem =~ /technologymapviewer/ && view == zhdl-view-tasks"
   group: "inline"
 
 - name: view.tasks.snapshotviewer
   title: "Open Snapshop Viewer"
   icon: eye
   where: ["view/item/context"]
-  when: "viewItem =~ /snapshotviewer/ && view == teroshdl-view-tasks"
+  when: "viewItem =~ /snapshotviewer/ && view == zhdl-view-tasks"
   group: "inline"
 
 - name: project.quartus.rtlAnalyzer
@@ -250,13 +250,13 @@
   title: "Add"
   icon: add
   where: ["view/title"]
-  when: "view == teroshdl-view-watcher && view == teroshdl-view-watcher"
+  when: "view == zhdl-view-watcher && view == zhdl-view-watcher"
 
 - name: view.watcher.delete
   title: "Delete watcher"
   icon: dash
   where: ["view/item/context"]
-  when: "viewItem == watcher && view == teroshdl-view-watcher"
+  when: "viewItem == watcher && view == zhdl-view-watcher"
   group: "inline"
 
 ## Outputs
@@ -264,7 +264,7 @@
   title: "Clean project"
   icon: trash
   where: ["view/title"]
-  when: "view == teroshdl-view-output && view == teroshdl-view-output"
+  when: "view == zhdl-view-output && view == zhdl-view-output"
 
 ################################################################################
 # Editor

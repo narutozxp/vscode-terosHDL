@@ -76,12 +76,12 @@ export class Project_manager extends BaseView {
     }
 
     set_commands() {
-        vscode.commands.registerCommand("teroshdl.documentation", () => this.open_doc());
+        vscode.commands.registerCommand("zhdl.documentation", () => this.open_doc());
 
-        vscode.commands.registerCommand("teroshdl.view.project.add", (item) => this.add_project(item));
-        vscode.commands.registerCommand("teroshdl.view.project.select", (item) => this.select_project(item));
-        vscode.commands.registerCommand("teroshdl.view.project.delete", (item) => this.delete_project(item));
-        vscode.commands.registerCommand("teroshdl.view.project.rename", (item) => this.rename_project(item));
+        vscode.commands.registerCommand("zhdl.view.project.add", (item) => this.add_project(item));
+        vscode.commands.registerCommand("zhdl.view.project.select", (item) => this.select_project(item));
+        vscode.commands.registerCommand("zhdl.view.project.delete", (item) => this.delete_project(item));
+        vscode.commands.registerCommand("zhdl.view.project.rename", (item) => this.rename_project(item));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,7 +167,7 @@ export class Project_manager extends BaseView {
                 const msg = `Intel@ Quartus@ Prime project ${quartusProject.get_name()} created.`;
                 showMessage(msg, t_message_level.INFO);
             } catch (error) {
-                const msg = "Intel@ Quartus@ Prime project can't be created. Check the TerosHDL: Debug output.";
+                const msg = "Intel@ Quartus@ Prime project can't be created. Check the ZHDL: Debug output.";
                 showMessage(msg, t_message_level.WARNING);
             }
         }
@@ -300,7 +300,7 @@ export class Project_manager extends BaseView {
                     showMessage(msg, t_message_level.INFO);
                     resolve();
                 } catch (error) {
-                    const msg = "Intel@ Quartus@ Prime project can't be loaded. Check the TerosHDL: Debug Output.";
+                    const msg = "Intel@ Quartus@ Prime project can't be loaded. Check the ZHDL: Debug Output.";
                     showMessage(msg, t_message_level.WARNING);
                     resolve();
                 }

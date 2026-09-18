@@ -16,6 +16,7 @@ out
 node_modules
 .vscode-test/
 *.vsix
+user.zhdl.config.json
 user.teros-hdl.config.json
 prj_config.teros
 package-lock.json

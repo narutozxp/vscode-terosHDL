@@ -49,9 +49,9 @@ export class TreeDependencyManager extends BaseView{
     }
 
     set_commands(){
-        vscode.commands.registerCommand("teroshdl.view.dependency.refresh", () => this.refresh_tree());
-        vscode.commands.registerCommand("teroshdl.view.dependency.schematic", () => this.open_schematic_viewer());
-        vscode.commands.registerCommand("teroshdl.view.dependency.viewer", () => this.open_dependencies_viewer());
+        vscode.commands.registerCommand("zhdl.view.dependency.refresh", () => this.refresh_tree());
+        vscode.commands.registerCommand("zhdl.view.dependency.schematic", () => this.open_schematic_viewer());
+        vscode.commands.registerCommand("zhdl.view.dependency.viewer", () => this.open_dependencies_viewer());
     }
 
     refresh_tree(){
@@ -67,4 +67,3 @@ export class TreeDependencyManager extends BaseView{
         this.dependency_manager.create_webview();
     }
 }
-

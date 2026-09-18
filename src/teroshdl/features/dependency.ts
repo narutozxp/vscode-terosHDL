@@ -41,7 +41,7 @@ export class Dependency_manager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     constructor(context: vscode.ExtensionContext, manager: Multi_project_manager) {
 
-        const activation_command = 'teroshdl.dependency.viewer';
+        const activation_command = 'zhdl.dependency.viewer';
         const id = "dependency_viewer";
 
         const resource_path = path_lib.join(context.extensionPath, 'resources', 'webviews', base_path, 'state_machine_viewer.html');

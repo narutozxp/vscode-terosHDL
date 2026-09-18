@@ -23,7 +23,7 @@ import { closeDatabase, execQuery, openDatabase } from 'colibri/project_manager/
 export function getLogView(context: vscode.ExtensionContext): LogView {
     const view = new LogView(context);
     context.subscriptions.push(vscode.window.registerWebviewViewProvider(
-        'teroshdl-report-logs', view, { webviewOptions: { retainContextWhenHidden: true } })
+        'zhdl-report-logs', view, { webviewOptions: { retainContextWhenHidden: true } })
     );
     return view;
 }

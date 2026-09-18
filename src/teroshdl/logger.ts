@@ -26,9 +26,9 @@ export class Logger extends LoggerBase {
     constructor(name = "") {
         super();
         if (name === "") {
-            name = 'TerosHDL: Tool manager';
+            name = 'ZHDL: Tool manager';
         }
-        this.output_channel = vscode.window.createOutputChannel(name, 'logTerosHDL');
+        this.output_channel = vscode.window.createOutputChannel(name, 'logZHDL');
     }
 
     clear() {
@@ -85,6 +85,6 @@ export class Logger extends LoggerBase {
     }
 }
 
-export const globalLogger: Logger = new Logger("TerosHDL: Global");
-export const toolLogger: Logger = new Logger("TerosHDL: Tool Manager");
-export const debugLogger: Logger = new Logger("TerosHDL: Debug");
+export const globalLogger: Logger = new Logger("ZHDL: Global");
+export const toolLogger: Logger = new Logger("ZHDL: Tool Manager");
+export const debugLogger: Logger = new Logger("ZHDL: Debug");

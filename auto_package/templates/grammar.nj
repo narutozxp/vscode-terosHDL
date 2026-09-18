@@ -1,7 +1,7 @@
 "grammars": [
     {
-        "language": "logTerosHDL",
-        "scopeName": "logTerosHDL.log",
+        "language": "logZHDL",
+        "scopeName": "logZHDL.log",
         "path": "./syntaxes/log.tmLanguage.json"
     },
     {

@@ -16,7 +16,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with TerosHDL.  If not, see <https://www.gnu.org/licenses/>.
-import { registerRuntimeDiagnostics } from './runtimeDiagnostics';
 import 'module-alias/register';
 
 import * as vscode from 'vscode';
@@ -26,11 +25,10 @@ import { Teroshdl } from './teroshdl';
 import { globalLogger, toolLogger, debugLogger } from './logger';
 import { Logger } from 'colibri/logger/logger';
 
-let teroshdl: Teroshdl | undefined = undefined;
+let zhdl: Teroshdl | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext) {
-    registerRuntimeDiagnostics(context);
-    debugLogger.info('Congratulations, your extension "TerosHDL" is now active!');
+    debugLogger.info('Congratulations, your extension "ZHDL" is now active!');
 
     const extension_manager = new ExtensionManager(context);
 
@@ -52,14 +50,14 @@ export async function activate(context: vscode.ExtensionContext) {
         debugLogger.error(e);
     }
 
-    teroshdl = new Teroshdl(context);
-    await teroshdl.init_teroshdl();
+    zhdl = new Teroshdl(context);
+    await zhdl.init_teroshdl();
 }
 
 export async function deactivate() {
-    if (teroshdl === undefined) {
+    if (zhdl === undefined) {
         return;
     }
-    await teroshdl.deactivate();
-    debugLogger.info('TerosHDL deactivated');
+    await zhdl.deactivate();
+    debugLogger.info('ZHDL deactivated');
 }

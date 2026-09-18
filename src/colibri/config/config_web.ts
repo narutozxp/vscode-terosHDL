@@ -202,6 +202,16 @@ body {
     color: var(--vscode-descriptionForeground);
     margin-bottom: 8px;
     line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.setting-control-description {
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+
+.setting-checkbox-description {
+    margin-left: 24px;
 }
 
 /* Form Controls */
@@ -259,6 +269,7 @@ body {
     position: relative;
     display: inline-block;
     width: 320px;
+    max-width: 100%;
 }
 
 /* Custom dropdown arrow using CSS - more visible fallback */
@@ -279,6 +290,9 @@ body {
 
 /* Alternative approach with background-image for better visibility */
 .select-container .setting-select-box {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 8px center;
@@ -293,7 +307,7 @@ body {
 
 .setting-checkbox {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
     cursor: pointer;
 }
@@ -301,7 +315,8 @@ body {
 .setting-checkbox input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    margin: 0;
+    margin: 2px 0 0;
+    flex-shrink: 0;
     border: 1px solid var(--vscode-settings-checkboxBorder);
     background-color: var(--vscode-settings-checkboxBackground);
     border-radius: 2px;
@@ -337,6 +352,9 @@ body {
 
 .setting-checkbox-label {
     font-size: 13px;
+    line-height: 20px;
+    min-width: 0;
+    overflow-wrap: anywhere;
     color: var(--vscode-settings-textInputForeground);
     cursor: pointer;
 }
@@ -964,6 +982,37 @@ body.vscode-high-contrast {
                     </div>
                   
                   
+                    <div class="setting-item">
+                        <div class="setting-item-label">
+                            Module indexing scope
+                            <span class="markConfig" id="mark_general-general-indexing_scope"></span>
+                        </div>
+                        <div class="select-container">
+                            <select class="setting-select-box" id="general-general-indexing_scope">
+                                      <option value='openFiles'>Open files (default)</option>
+                                      <option value='workspace'>Workspace folder</option>
+                            </select>
+                        </div>
+                        <div class="setting-item-description setting-control-description">
+                            Choose which files to index when the current file is not in a ZHDL project. Files in a project use that project's file list. This is a global setting.
+                        </div>
+                    </div>
+
+
+                    <div class="setting-item">
+                        <div class="setting-checkbox">
+                            <input type="checkbox" id="general-general-live_parsing">
+                            <label class="setting-checkbox-label" for="general-general-live_parsing">
+                                Enable live parsing (experimental)
+                                <span class="markConfig" id="mark_general-general-live_parsing"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item-description setting-control-description setting-checkbox-description">
+                            Update Verilog/SystemVerilog completion and outline from unsaved changes. Complex edits may be slower. Disabled by default. This is a global setting.
+                        </div>
+                    </div>
+
+
                   
             </div>
             <div class="settings-section" id="documentation-general">
@@ -6486,6 +6535,10 @@ body.vscode-high-contrast {
     config["general"]["general"]["go_to_definition_verilog"] = element_value
     element_value = document.getElementById("general-general-developer_mode").checked;
     config["general"]["general"]["developer_mode"] = element_value
+    element_value = document.getElementById("general-general-indexing_scope").value;
+    config["general"]["general"]["indexing_scope"] = element_value
+    element_value = document.getElementById("general-general-live_parsing").checked;
+    config["general"]["general"]["live_parsing"] = element_value
     config["documentation"] = {}
     config["documentation"]["general"] = {}
     element_value = document.getElementById("documentation-general-language").value;
@@ -7604,6 +7657,12 @@ body.vscode-high-contrast {
     }
     if (config["general"] && config["general"]["general"] && config["general"]["general"]["developer_mode"] !== undefined) {
         document.getElementById("general-general-developer_mode").checked = config["general"]["general"]["developer_mode"];
+    }
+    if (config["general"] && config["general"]["general"] && config["general"]["general"]["indexing_scope"] !== undefined) {
+        document.getElementById("general-general-indexing_scope").value = config["general"]["general"]["indexing_scope"];
+    }
+    if (config["general"] && config["general"]["general"] && config["general"]["general"]["live_parsing"] !== undefined) {
+        document.getElementById("general-general-live_parsing").checked = config["general"]["general"]["live_parsing"];
     }
     if (config["documentation"] && config["documentation"]["general"] && config["documentation"]["general"]["language"] !== undefined) {
         document.getElementById("documentation-general-language").value = config["documentation"]["general"]["language"];
@@ -8793,6 +8852,16 @@ body.vscode-high-contrast {
       mark = MODIFIEDMSG;
     }
     document.getElementById("mark_general-general-developer_mode").innerHTML = mark;
+    mark = "";
+    if (projectName !== undefined && config["general"] && config["general"]["general"] && config["general"]["general"]["indexing_scope"] !== undefined) {
+      mark = MODIFIEDMSG;
+    }
+    document.getElementById("mark_general-general-indexing_scope").innerHTML = mark;
+    mark = "";
+    if (projectName !== undefined && config["general"] && config["general"]["general"] && config["general"]["general"]["live_parsing"] !== undefined) {
+      mark = MODIFIEDMSG;
+    }
+    document.getElementById("mark_general-general-live_parsing").innerHTML = mark;
     mark = "";
     if (projectName !== undefined && config["documentation"] && config["documentation"]["general"] && config["documentation"]["general"]["language"] !== undefined) {
       mark = MODIFIEDMSG;

@@ -22,7 +22,7 @@ import { get_icon } from "../utils";
 import { Run_output_manager } from "../run_output";
 import { Multi_project_manager } from "colibri/project_manager/multi_project_manager";
 
-export const VIEW_ID = "teroshdl-view-runs";
+export const VIEW_ID = "zhdl-view-runs";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Elements
@@ -164,4 +164,3 @@ export class TreeItem extends vscode.TreeItem {
         this.children = children;
     }
 }
-

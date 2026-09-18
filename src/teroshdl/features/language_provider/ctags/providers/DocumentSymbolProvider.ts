@@ -27,6 +27,7 @@ import {
 import { Ctags, CtagsManager, Symbol } from '../ctags';
 import { Logger, Log_Severity } from '../Logger';
 import { FileSymbolCache } from '../../index/fileCache';
+import { getIndexingSettings } from '../../index/settings';
 
 export default class VerilogDocumentSymbolProvider implements DocumentSymbolProvider {
 
@@ -64,7 +65,7 @@ export default class VerilogDocumentSymbolProvider implements DocumentSymbolProv
     provideDocumentSymbols(document: TextDocument, token: CancellationToken): Thenable<DocumentSymbol[]> {
         if (this.cache) {
             const live = document.isDirty && ['verilog', 'systemverilog'].includes(document.languageId) &&
-                workspace.getConfiguration('zhdl', document.uri).get<boolean>('indexing.liveParsing', false);
+                getIndexingSettings().liveParsing;
             return (live ? this.cache.getBuffer(document) : this.cache.get(document.uri.fsPath)).then(snapshot => {
                 if (token?.isCancellationRequested) { return []; }
                 return this.buildDocumentSymbolList(snapshot.symbols);

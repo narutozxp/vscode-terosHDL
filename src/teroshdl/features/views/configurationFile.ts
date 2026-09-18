@@ -34,7 +34,7 @@ export class ConfigurationFileWebview {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     constructor(context: vscode.ExtensionContext, manager: Multi_project_manager) {
 
-        const command = "teroshdl.view.source.properties";
+        const command = "zhdl.view.source.properties";
 
         this.context = context;
         this.manager = manager;

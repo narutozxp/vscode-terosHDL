@@ -57,16 +57,16 @@ export class Source_manager extends BaseView {
     }
 
     set_commands() {
-        vscode.commands.registerCommand('teroshdl.view.source.search', () => this.search());
-        vscode.commands.registerCommand('teroshdl.view.source.save_project', () => this.save_project());
-        vscode.commands.registerCommand('teroshdl.view.source.select_toplevel', (item) => this.select_top(item));
-        vscode.commands.registerCommand('teroshdl.view.source.add', async () => await this.add());
-        vscode.commands.registerCommand('teroshdl.view.source.add_source_to_library', (item) =>
+        vscode.commands.registerCommand('zhdl.view.source.search', () => this.search());
+        vscode.commands.registerCommand('zhdl.view.source.save_project', () => this.save_project());
+        vscode.commands.registerCommand('zhdl.view.source.select_toplevel', (item) => this.select_top(item));
+        vscode.commands.registerCommand('zhdl.view.source.add', async () => await this.add());
+        vscode.commands.registerCommand('zhdl.view.source.add_source_to_library', (item) =>
             this.add_source_to_library(item)
         );
-        vscode.commands.registerCommand('teroshdl.view.source.delete_library', (item) => this.delete_library(item));
-        vscode.commands.registerCommand('teroshdl.view.source.delete_source', (item) => this.delete_source(item));
-        vscode.commands.registerCommand('teroshdl.view.source.open', (item) => this.openSource(item));
+        vscode.commands.registerCommand('zhdl.view.source.delete_library', (item) => this.delete_library(item));
+        vscode.commands.registerCommand('zhdl.view.source.delete_source', (item) => this.delete_source(item));
+        vscode.commands.registerCommand('zhdl.view.source.open', (item) => this.openSource(item));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

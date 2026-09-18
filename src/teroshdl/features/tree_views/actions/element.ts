@@ -18,7 +18,7 @@
 // along with TerosHDL.  If not, see <https://www.gnu.org/licenses/>.
 
 import * as vscode from "vscode";
-export const VIEW_ID = "teroshdl-view-actions";
+export const VIEW_ID = "zhdl-view-actions";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Providers
@@ -66,4 +66,3 @@ export class TreeItem extends vscode.TreeItem {
         this.children = children;
     }
 }
-

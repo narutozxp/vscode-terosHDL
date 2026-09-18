@@ -29,7 +29,7 @@ export function getTimingReportView(context: vscode.ExtensionContext, projectMan
 
     const view = new TimingReportView(context, projectManager, pathDetailsView);
     context.subscriptions.push(vscode.window.registerWebviewViewProvider(
-        'teroshdl-view-timing', view, { webviewOptions: { retainContextWhenHidden: true } })
+        'zhdl-view-timing', view, { webviewOptions: { retainContextWhenHidden: true } })
     );
     return view
 }

@@ -24,3 +24,18 @@ developer_mode:
   description: "Developer mode: be careful!!"
   type: boolean
   value: false
+
+indexing_scope:
+  description: "Module indexing scope"
+  help: "Choose which files to index when the current file is not in a ZHDL project. Files in a project use that project's file list. This is a global setting."
+  type: select
+  value: "openFiles"
+  options:
+    openFiles: "Open files (default)"
+    workspace: "Workspace folder"
+
+live_parsing:
+  description: "Enable live parsing (experimental)"
+  help: "Update Verilog/SystemVerilog completion and outline from unsaved changes. Complex edits may be slower. Disabled by default. This is a global setting."
+  type: boolean
+  value: false

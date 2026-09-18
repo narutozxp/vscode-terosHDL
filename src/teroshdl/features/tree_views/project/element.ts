@@ -24,8 +24,8 @@ import { ThemeColor } from 'vscode';
 import { e_project_type } from 'colibri/project_manager/common';
 
 
-export const VIEW_ID = "teroshdl-project";
-const URISTRINGINIT = "teroshdl:/";
+export const VIEW_ID = "zhdl-project";
+const URISTRINGINIT = "zhdl:/";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Elements
@@ -51,7 +51,7 @@ export class Project extends vscode.TreeItem {
         this.tooltip = "";
         // Command
         this.command = {
-            command: "teroshdl.view.project.select",
+            command: "zhdl.view.project.select",
             title: "Select project",
             arguments: [this],
         };
@@ -159,7 +159,7 @@ export class TreeItem extends vscode.TreeItem {
 export class ProjectDecorator implements vscode.FileDecorationProvider {
     onDidChangeFileDecorations?: vscode.Event<vscode.Uri | vscode.Uri[]>;
     provideFileDecoration(uri: vscode.Uri): vscode.ProviderResult<vscode.FileDecoration> {
-        if (uri.path.includes("project-active") && uri.scheme === "teroshdl") {
+        if (uri.path.includes("project-active") && uri.scheme === "zhdl") {
             return {
                 color: new ThemeColor("charts.green"),
             };

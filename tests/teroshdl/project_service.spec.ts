@@ -4,6 +4,8 @@ import * as path from 'path';
 import { TextDocument } from 'vscode';
 import { ProjectLanguageService } from '../../src/teroshdl/features/language_provider/index/projectService';
 import { FileSymbolCache } from '../../src/teroshdl/features/language_provider/index/fileCache';
+import { GlobalConfigManager } from '../../src/colibri/config/config_manager';
+import { e_general_general_indexing_scope } from '../../src/colibri/config/config_declaration';
 
 // Workers run compiled JavaScript rather than ts-jest's in-process TypeScript transforms.
 jest.mock('../../src/teroshdl/features/language_provider/index/bufferService', () =>
@@ -18,7 +20,7 @@ jest.mock('vscode', () => {
         RelativePattern: class { constructor(public base: any, public pattern: string) {} },
         workspace: {
             watchers,
-            textDocuments: [], getConfiguration: jest.fn(),
+            textDocuments: [],
             getWorkspaceFolder: jest.fn(), findFiles: jest.fn(),
             createFileSystemWatcher: jest.fn(() => {
                 const watcher: any = { dispose() {} };
@@ -41,10 +43,15 @@ describe('Project service discovery and buffer overlays', () => {
         vscode.workspace.watchers.length = 0;
         vscode.workspace.getWorkspaceFolder.mockReset(); vscode.workspace.findFiles.mockReset();
         vscode.workspace.textDocuments = [];
-        vscode.workspace.getConfiguration.mockReturnValue({ get: () => 'openFiles' });
+        GlobalConfigManager.newInstance('');
     });
     afterEach(() => { service?.dispose(); cache?.dispose(); fs.rmSync(directory, { recursive: true, force: true }); });
     function file(name: string, source: string) { const target = path.join(directory, name); fs.writeFileSync(target, source); return target; }
+    function scope(value: e_general_general_indexing_scope) {
+        const config = GlobalConfigManager.getInstance().get_config();
+        config.general.general.indexing_scope = value;
+        GlobalConfigManager.getInstance().set_config(config);
+    }
     function document(target: string, source: string, version = 1): TextDocument {
         return { uri: vscode.Uri.file(target), version, getText: () => source } as unknown as TextDocument;
     }
@@ -67,7 +74,7 @@ describe('Project service discovery and buffer overlays', () => {
     it('refreshes discovered membership on create/delete and uses current buffer headers', async () => {
         const top = file('top.sv', 'module top; endmodule');
         const child = file('child.sv', 'module child(input clk); endmodule');
-        vscode.workspace.getConfiguration.mockReturnValue({ get: () => 'workspace' });
+        scope(e_general_general_indexing_scope.workspace);
         vscode.workspace.getWorkspaceFolder.mockReturnValue({ uri: vscode.Uri.file(directory) });
         vscode.workspace.findFiles.mockResolvedValue([top, child].map(vscode.Uri.file)); setup();
         const doc = document(top, 'module edited(input reset); endmodule');
@@ -86,6 +93,24 @@ describe('Project service discovery and buffer overlays', () => {
         expect(vscode.workspace.findFiles).not.toHaveBeenCalled();
     });
 
+    it('releases buffer workers when live parsing is disabled and unsubscribes on disposal', () => {
+        const top = file('top.sv', 'module top; endmodule');
+        const doc = document(top, 'module top; endmodule');
+        vscode.workspace.textDocuments = [doc];
+        setup();
+        const close = jest.spyOn(cache.buffers, 'close');
+        const config = GlobalConfigManager.getInstance().get_config();
+        config.general.general.live_parsing = true;
+        GlobalConfigManager.getInstance().set_config(config);
+        expect(close).not.toHaveBeenCalled();
+        config.general.general.live_parsing = false;
+        GlobalConfigManager.getInstance().set_config(config);
+        expect(close).toHaveBeenCalledWith(doc);
+        service.dispose();
+        GlobalConfigManager.getInstance().set_config(config);
+        expect(close).toHaveBeenCalledTimes(1);
+    });
+
     it('defaults to all open HDL files and removes modules when files close', async () => {
         const top = file('top.sv', 'module top; endmodule');
         const child = file('child.v', 'module child; endmodule');
@@ -101,9 +126,9 @@ describe('Project service discovery and buffer overlays', () => {
         expect((await service.modules(doc)).map(model => model.name)).toEqual(['top']);
         vscode.workspace.textDocuments.push(document(child, 'module child; endmodule'));
         expect((await service.modules(doc)).map(model => model.name).sort()).toEqual(['child', 'top']);
-        vscode.workspace.getConfiguration.mockReturnValue({ get: () => 'workspace' });
+        scope(e_general_general_indexing_scope.workspace);
         expect((await service.modules(doc)).map(model => model.name).sort()).toEqual(['child', 'hidden', 'top']);
-        vscode.workspace.getConfiguration.mockReturnValue({ get: () => 'openFiles' });
+        scope(e_general_general_indexing_scope.openFiles);
         expect((await service.modules(doc)).map(model => model.name).sort()).toEqual(['child', 'top']);
     });
 });

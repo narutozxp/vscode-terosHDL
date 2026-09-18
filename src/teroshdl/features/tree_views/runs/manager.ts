@@ -56,17 +56,17 @@ export class Runs_manager extends BaseView{
     }
 
     set_commands() {
-        vscode.commands.registerCommand("teroshdl.view.runs.run_all", async () => {
+        vscode.commands.registerCommand("zhdl.view.runs.run_all", async () => {
             const output = await this.run(undefined);
             return output;
         });
 
-        vscode.commands.registerCommand("teroshdl.view.runs.stop", () => this.stop(undefined));
-        vscode.commands.registerCommand("teroshdl.view.runs.run", async (item) => {
+        vscode.commands.registerCommand("zhdl.view.runs.stop", () => this.stop(undefined));
+        vscode.commands.registerCommand("zhdl.view.runs.run", async (item) => {
             const output = await this.run(item);
             return output;
         });
-        vscode.commands.registerCommand("teroshdl.view.runs.refresh", () => this.refresh([]));
+        vscode.commands.registerCommand("zhdl.view.runs.refresh", () => this.refresh([]));
     }
 
     async stop(item: element.Run | undefined) {
@@ -87,7 +87,7 @@ export class Runs_manager extends BaseView{
         return vscode.window.withProgress({
             location: vscode.ProgressLocation.Window,
             cancellable: false,
-            title: 'TerosHDL: Tool running'
+            title: 'ZHDL: Tool running'
         }, async (progress) => {
 
             // Status bar to 0
@@ -164,4 +164,3 @@ export class Runs_manager extends BaseView{
         this.tree.refresh();
     }
 }
-

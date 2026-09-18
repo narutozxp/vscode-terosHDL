@@ -34,7 +34,7 @@ export class Template_manager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     constructor(context, manager: Multi_project_manager) {
         this.manager = manager;
-        vscode.commands.registerCommand("teroshdl.generate_template", () => this.get_template());
+        vscode.commands.registerCommand("zhdl.generate_template", () => this.get_template());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

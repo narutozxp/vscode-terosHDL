@@ -41,7 +41,7 @@ export abstract class Base_webview {
             this.manager = manager;
     
             vscode.workspace.onDidChangeConfiguration(this.force_update, this, this.subscriptions);
-            vscode.commands.registerCommand(`teroshdl.${id}.set_config`, () => this.set_config());
+            vscode.commands.registerCommand(`zhdl.${id}.set_config`, () => this.set_config());
 
             context.subscriptions.push(
                 vscode.commands.registerCommand(

@@ -32,7 +32,7 @@ import { check_if_hdl_file, get_toplevel_from_path } from 'colibri/utils/hdl_uti
 import { e_schematic_result, getSchematic } from 'colibri/yosys/yosys';
 import { e_schematic_general_backend } from 'colibri/config/config_declaration';
 
-const activation_command = 'teroshdl.netlist.viewer';
+const activation_command = 'zhdl.netlist.viewer';
 const id = "netlist";
 
 export class Schematic_manager extends Base_webview {
@@ -189,7 +189,7 @@ export class Schematic_manager extends Base_webview {
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Window,
             cancellable: false,
-            title: 'TerosHDL: Creating schematic viewer...'
+            title: 'ZHDL: Creating schematic viewer...'
         }, async (progress) => {
 
             progress.report({ increment: 0 });
@@ -204,7 +204,7 @@ export class Schematic_manager extends Base_webview {
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Window,
             cancellable: false,
-            title: 'TerosHDL: Creating schematic viewer...'
+            title: 'ZHDL: Creating schematic viewer...'
         }, async (progress) => {
 
             progress.report({ increment: 0 });

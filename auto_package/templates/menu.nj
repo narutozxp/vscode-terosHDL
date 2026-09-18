@@ -17,7 +17,7 @@
             "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
                     {%- endif %}
 
-            "command": "teroshdl.{{ command["name"] }}",
+            "command": "zhdl.{{ command["name"] }}",
             "group": "navigation"
         }
                 {% set ns.counter = ns.counter + 1 %}
@@ -44,7 +44,7 @@
             "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
                     {%- endif %}
 
-            "command": "teroshdl.{{ command["name"] }}",
+            "command": "zhdl.{{ command["name"] }}",
             "group": "navigation"
         }
                 {% set ns.counter = ns.counter + 1 %}
@@ -71,7 +71,7 @@
             "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
                     {%- endif %}
 
-            "command": "teroshdl.{{ command["name"] }}",
+            "command": "zhdl.{{ command["name"] }}",
             "group": "navigation"
         }
                 {% set ns.counter = ns.counter + 1 %}
@@ -92,7 +92,7 @@
             ,{
                         {%- endif %}
                 "when": "{{ command["when"] }}",
-                "command": "teroshdl.{{ command["name"] }}",
+                "command": "zhdl.{{ command["name"] }}",
                 "group": "{{ command["group"] }}"
             }
                     {% set ns.counter = ns.counter + 1 %}
@@ -113,7 +113,7 @@
         ,{
                     {%- endif %}
             "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-            "command": "teroshdl.{{ command["name"] }}",
+            "command": "zhdl.{{ command["name"] }}",
             "group": "navigation"
         }
                 {% set ns.counter = ns.counter + 1 %}

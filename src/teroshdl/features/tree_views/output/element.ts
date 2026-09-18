@@ -23,7 +23,7 @@ import { Run_output_manager } from "../run_output";
 import { e_artifact_type, e_element_type } from "colibri/project_manager/tool/common";
 import { Multi_project_manager } from "colibri/project_manager/multi_project_manager";
 
-export const VIEW_ID = "teroshdl-view-output";
+export const VIEW_ID = "zhdl-view-output";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Elements
@@ -72,7 +72,7 @@ export class Output extends vscode.TreeItem {
             this.iconPath = get_icon("console");
             this.command = {
                 title: 'Open file',
-                command: 'teroshdl.open',
+                command: 'zhdl.open',
                 arguments: [vscode.Uri.file(path)]
             };
         }
@@ -81,7 +81,7 @@ export class Output extends vscode.TreeItem {
             this.iconPath = get_icon("note");
             this.command = {
                 title: 'Open webview',
-                command: 'teroshdl.openwebview',
+                command: 'zhdl.openwebview',
                 arguments: [content]
             };
         }
@@ -89,7 +89,7 @@ export class Output extends vscode.TreeItem {
             this.iconPath = get_icon("note");
             this.command = {
                 title: 'Open file',
-                command: 'teroshdl.open',
+                command: 'zhdl.open',
                 arguments: [vscode.Uri.file(path)]
             };
         }
@@ -97,7 +97,7 @@ export class Output extends vscode.TreeItem {
             this.iconPath = get_icon("pulse");
             this.command = {
                 title: 'Open waveform',
-                command: 'teroshdl.waveform',
+                command: 'zhdl.waveform',
                 arguments: [vscode.Uri.file(path)]
             };
         }
@@ -227,4 +227,3 @@ export class TreeItem extends vscode.TreeItem {
         this.children = children;
     }
 }
-

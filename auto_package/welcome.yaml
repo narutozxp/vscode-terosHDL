@@ -1,4 +1,4 @@
-- view: teroshdl-project
+- view: zhdl-project
   content:
     - description: No ZHDL project are open.
-      command: 
+      command:

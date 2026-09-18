@@ -176,7 +176,7 @@ export class Formatter_manager {
         context.subscriptions.push(disposable);
         context.subscriptions.push(
             vscode.commands.registerCommand(
-                'teroshdl.format',
+                'zhdl.format',
                 async () => {
                     vscode.commands.executeCommand("editor.action.format");
                 }

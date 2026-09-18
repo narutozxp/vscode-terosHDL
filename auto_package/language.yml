@@ -28,8 +28,8 @@
 - id: "vcd"
   extensions: [".vcd"]
 
-- id: "logTerosHDL"
-  extensions: [".logTerosHDL"]
+- id: "logZHDL"
+  extensions: [".logZHDL"]
 
 - id: "gtkw_waveconfig"
   extensions: [".gtkw"]

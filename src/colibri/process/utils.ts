@@ -143,14 +143,14 @@ export function get_home_directory(): string {
 export function get_random_folder_in_home_directory(): string {
     const user_hom_dir = get_home_directory();
     const random_id = makeid(5);
-    const random_folder = path_lib.join(user_hom_dir, `.teroshdl_${random_id}_`);
+    const random_folder = path_lib.join(user_hom_dir, `.zhdl_${random_id}_`);
     return random_folder;
 }
 
 export function createTempFileInHome(content: string): string {
     const user_hom_dir = get_home_directory();
     const random_id = makeid(5);
-    const filePath = path_lib.join(user_hom_dir, `.teroshdl_${random_id}`);
+    const filePath = path_lib.join(user_hom_dir, `.zhdl_${random_id}`);
     file_utils.save_file_sync(filePath, content);
     return filePath;
 }

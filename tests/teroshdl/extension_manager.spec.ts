@@ -27,7 +27,7 @@ describe('ExtensionManager for a renamed extension', () => {
 
         expect(manager.get_installation_type()).toEqual(expect.objectContaining({ firstInstall: true }));
         expect(workspace.fs.writeFile).toHaveBeenCalledWith(
-            { path: '/extensions/narutozxp.zhdl/user.teros-hdl.config.json' },
+            { path: '/extensions/narutozxp.zhdl/user.zhdl.config.json' },
             expect.any(Uint8Array)
         );
         const bytes = (workspace.fs.writeFile as jest.Mock).mock.calls[0][1];

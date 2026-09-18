@@ -75,8 +75,8 @@ class Linter {
     private show_linter_unavailable_message(linter_name: string, installation_path: string) {
         if (linter_name === e_linter_general_linter_vhdl.nvc) {
             const configuredPath = installation_path === '' ? 'PATH del sistema' : installation_path;
-            const message = 'TerosHDL cannot find NVC. '
-                + 'Configure tools.nvc.installation_path in the TerosHDL settings, '
+            const message = 'ZHDL cannot find NVC. '
+                + 'Configure tools.nvc.installation_path in the ZHDL settings, '
                 + `or make sure nvc is available in the system PATH ${configuredPath}.`;
             vscode.window.showWarningMessage(
                 message
@@ -85,7 +85,7 @@ class Linter {
         }
 
         vscode.window.showWarningMessage(
-            `TerosHDL can't find the linter ${linter_name}. Check its installation_path or the system PATH.`
+            `ZHDL can't find the linter ${linter_name}. Check its installation_path or the system PATH.`
         );
     }
 
@@ -261,7 +261,7 @@ class Linter {
                 range: new vscode.Range((+line), (+col), (+line), Number.MAX_VALUE),
                 message: errors[i]['description'],
                 code: code,
-                source: `TerosHDL: ${linter_name}`
+                source: `ZHDL: ${linter_name}`
             });
         }
         this.diagnostic_collection.set(doc.uri, diagnostics);
@@ -302,7 +302,7 @@ class Linter {
                 range: new vscode.Range((+line), (+col), (+line), Number.MAX_VALUE),
                 message: errors[i]['description'],
                 code: code,
-                source: `TerosHDL: ${linter_name}`
+                source: `ZHDL: ${linter_name}`
             });
         }
         this.diagnostic_collection.set(uri, diagnostics);
@@ -371,8 +371,8 @@ export class Linter_manager {
 
         this.manager = manager;
 
-        vscode.commands.registerCommand(`teroshdl.linter.refresh`, () => this.refresh_lint());
-        vscode.commands.registerCommand(`teroshdl.config.change_config`, () => {
+        vscode.commands.registerCommand(`zhdl.linter.refresh`, () => this.refresh_lint());
+        vscode.commands.registerCommand(`zhdl.config.change_config`, () => {
             this.clear_linter_availability_cache();
             this.refresh_lint();
         });

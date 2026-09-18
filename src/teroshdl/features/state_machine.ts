@@ -39,7 +39,7 @@ export class State_machine_manager extends Base_webview {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     constructor(context: vscode.ExtensionContext, manager: Multi_project_manager) {
 
-        const activation_command = 'teroshdl.state_machine.viewer';
+        const activation_command = 'zhdl.state_machine.viewer';
         const id = "state_machine";
 
         const resource_path = path_lib.join(context.extensionPath, 'resources', 'webviews', 'state_machine_viewer', 'state_machine_viewer.html');

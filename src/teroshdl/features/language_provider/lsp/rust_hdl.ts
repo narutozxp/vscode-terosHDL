@@ -42,7 +42,7 @@ export class Rusthdl_lsp {
         this.manager = manager;
 
         this.context.subscriptions.push(
-            vscode.commands.registerCommand('teroshdl.vhdlls.restart', async () => {
+            vscode.commands.registerCommand('zhdl.vhdlls.restart', async () => {
                 if (this.client != undefined && this.client.isRunning() && this.client.state === State.Running) {
                     try {
                         await this.client.restart();

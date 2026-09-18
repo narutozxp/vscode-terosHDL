@@ -46,7 +46,7 @@ export class configCheckerManager {
         this.formatterManager = formatterManager;
         this.schematicManager = schematicManager;
 
-        vscode.commands.registerCommand('teroshdl.verifySetup', async () => await this.verifySetup());
+        vscode.commands.registerCommand('zhdl.verifySetup', async () => await this.verifySetup());
     }
 
     public async verifySetup() {

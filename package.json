@@ -3,7 +3,7 @@
     "displayName": "ZHDL",
     "publisher": "narutozxp",
     "description": "Powerful toolbox for ASIC/FPGA: state machine viewer, linter, documentation, snippets... and more! ",
-    "version": "8.0.9",
+    "version": "8.0.10",
     "engines": {
         "vscode": "^1.74.0"
     },
@@ -37,125 +37,103 @@
         "colibri": "./out/colibri"
     },
     "contributes": {
-        "configuration": {
-            "title": "ZHDL",
-            "properties": {
-                "zhdl.indexing.liveParsing": {
-                    "type": "boolean",
-                    "default": false,
-                    "scope": "resource",
-                    "description": "试验功能：使用后台 Tree-sitter 增量解析未保存的 Verilog / SystemVerilog 变量和端口，更新补全与大纲。复杂编辑可能触发较慢的全量符号提取。"
-                },
-                "zhdl.indexing.scope": {
-                    "type": "string",
-                    "enum": ["openFiles", "workspace"],
-                    "enumDescriptions": [
-                        "仅索引当前打开的 Verilog / SystemVerilog 文件。",
-                        "索引当前文件所属 workspace 文件夹中的 Verilog / SystemVerilog 文件。"
-                    ],
-                    "default": "openFiles",
-                    "scope": "resource",
-                    "description": "当前文件不属于 ZHDL 工程时，模块补全与实例化使用的索引范围。属于工程的文件优先使用工程文件列表。"
-                }
-            }
-        },
         "viewsContainers": {
             "activitybar": [
                 {
-                    "id": "teroshdl-project",
+                    "id": "zhdl-project",
                     "title": "ZHDL",
                     "icon": "resources/images/zhdl-sidebar.svg"
                 }
             ],
             "panel": [
                 {
-                    "id": "teroshdl-messages-view",
+                    "id": "zhdl-messages-view",
                     "title": "ZHDL: log report",
                     "icon": "fancy.icon"
                 },
                 {
-                    "id": "teroshdl-timing-view",
+                    "id": "zhdl-timing-view",
                     "title": "ZHDL: Timing",
                     "icon": "fancy.icon"
                 }
             ]
         },
         "views": {
-            "teroshdl-project": [
+            "zhdl-project": [
                 {
-                    "id": "teroshdl-project",
+                    "id": "zhdl-project",
                     "name": "Projects"
                 },
                 {
-                    "id": "teroshdl-view-source",
+                    "id": "zhdl-view-source",
                     "name": "Files"
                 },
                 {
-                    "id": "teroshdl-view-dependency",
+                    "id": "zhdl-view-dependency",
                     "name": "Hierarchy"
                 },
                 {
-                    "id": "teroshdl-view-watcher",
+                    "id": "zhdl-view-watcher",
                     "name": "Watchers"
                 },
                 {
-                    "id": "teroshdl-view-tasks",
+                    "id": "zhdl-view-tasks",
                     "name": "Tasks"
                 },
                 {
-                    "id": "teroshdl-view-runs",
+                    "id": "zhdl-view-runs",
                     "name": "Runs"
                 },
                 {
-                    "id": "teroshdl-view-output",
+                    "id": "zhdl-view-output",
                     "name": "Outputs"
                 },
                 {
-                    "id": "teroshdl-view-ip-catalog",
+                    "id": "zhdl-view-ip-catalog",
                     "name": "IP Catalog"
                 },
                 {
-                    "id": "teroshdl-view-actions",
+                    "id": "zhdl-view-actions",
                     "name": "Configuration"
                 }
             ],
-            "teroshdl-messages-view": [
+            "zhdl-messages-view": [
                 {
                     "type": "webview",
-                    "id": "teroshdl-report-logs",
+                    "id": "zhdl-report-logs",
                     "name": "Report Logs"
                 }
             ],
-            "teroshdl-timing-view": [
+            "zhdl-timing-view": [
                 {
                     "type": "webview",
-                    "id": "teroshdl-view-timing",
+                    "id": "zhdl-view-timing",
                     "name": "Timing Report"
                 }
             ]
         },
         "viewsWelcome": [
             {
-                "view": "teroshdl-project",
-                "contents": "No ZHDL project are open.\n[Add Project](command:teroshdl.view.project.add)\nTo learn more about how to [setup a ZHDL project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/)."
+                "view": "zhdl-project",
+                "contents": "No ZHDL project are open.\n[Add Project](command:zhdl.view.project.add)\nTo learn more about how to [setup a ZHDL project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/)."
             },
             {
-                "view": "teroshdl-view-source",
+                "view": "zhdl-view-source",
                 "contents": "Learn more about how to [add files and libraries to a project](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/sources)."
             },
             {
-                "view": "teroshdl-view-dependency",
+                "view": "zhdl-view-dependency",
                 "contents": "Learn more about how to [setup ZHDL to compute Hierarchy](https://terostechnology.github.io/terosHDLdoc/docs/project_configuration/hierarchy)."
             },
             {
-                "view": "teroshdl-view-actions",
-                "contents": "[Verify Setup](command:teroshdl.verifySetup)\n[Open Global Settings Menu](command:teroshdl.configuration.global)\n[Export Settings](command:teroshdl.view.project.export_configuration)\n[Load Settings](command:teroshdl.view.project.load_configuration)\n[Documentation](command:teroshdl.documentation)"
+                "view": "zhdl-view-actions",
+                "contents": "[Verify Setup](command:zhdl.verifySetup)\n[Open Global Settings Menu](command:zhdl.configuration.global)\n[Export Settings](command:zhdl.view.project.export_configuration)\n[Load Settings](command:zhdl.view.project.load_configuration)\n[Documentation](command:zhdl.documentation)"
             }
         ],
         "grammars": [
             {
-                "language": "logTerosHDL",
-                "scopeName": "logTerosHDL.log",
+                "language": "logZHDL",
+                "scopeName": "logZHDL.log",
                 "path": "./syntaxes/log.tmLanguage.json"
             },
             {
@@ -204,210 +182,210 @@
             "explorer/context": [
                 {
                     "when": "resourceLangId == gtkw_wavebin || resourceLangId == gtkw_waveconfig || resourceLangId == vcd",
-                    "command": "teroshdl.waveform",
+                    "command": "zhdl.waveform",
                     "group": "navigation"
                 }
             ],
             "view/title": [
                 {
-                    "when": "view == teroshdl-project",
-                    "command": "teroshdl.view.project.add",
+                    "when": "view == zhdl-project",
+                    "command": "zhdl.view.project.add",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-source",
-                    "command": "teroshdl.view.source.save_project",
+                    "when": "view == zhdl-view-source",
+                    "command": "zhdl.view.source.save_project",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-source",
-                    "command": "teroshdl.view.source.search",
+                    "when": "view == zhdl-view-source",
+                    "command": "zhdl.view.source.search",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-source",
-                    "command": "teroshdl.view.source.add",
+                    "when": "view == zhdl-view-source",
+                    "command": "zhdl.view.source.add",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-dependency",
-                    "command": "teroshdl.view.dependency.refresh",
+                    "when": "view == zhdl-view-dependency",
+                    "command": "zhdl.view.dependency.refresh",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-dependency",
-                    "command": "teroshdl.view.dependency.schematic",
+                    "when": "view == zhdl-view-dependency",
+                    "command": "zhdl.view.dependency.schematic",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-dependency",
-                    "command": "teroshdl.view.dependency.viewer",
+                    "when": "view == zhdl-view-dependency",
+                    "command": "zhdl.view.dependency.viewer",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-runs",
-                    "command": "teroshdl.view.runs.run_all",
+                    "when": "view == zhdl-view-runs",
+                    "command": "zhdl.view.runs.run_all",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-runs",
-                    "command": "teroshdl.view.runs.stop",
+                    "when": "view == zhdl-view-runs",
+                    "command": "zhdl.view.runs.stop",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-runs",
-                    "command": "teroshdl.view.runs.refresh",
+                    "when": "view == zhdl-view-runs",
+                    "command": "zhdl.view.runs.refresh",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-tasks && view == teroshdl-view-tasks",
-                    "command": "teroshdl.view.tasks.stop",
+                    "when": "view == zhdl-view-tasks && view == zhdl-view-tasks",
+                    "command": "zhdl.view.tasks.stop",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-tasks && view == teroshdl-view-tasks",
-                    "command": "teroshdl.view.tasks.clean",
+                    "when": "view == zhdl-view-tasks && view == zhdl-view-tasks",
+                    "command": "zhdl.view.tasks.clean",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-watcher && view == teroshdl-view-watcher",
-                    "command": "teroshdl.view.watcher.add",
+                    "when": "view == zhdl-view-watcher && view == zhdl-view-watcher",
+                    "command": "zhdl.view.watcher.add",
                     "group": "navigation"
                 },
                 {
-                    "when": "view == teroshdl-view-output && view == teroshdl-view-output",
-                    "command": "teroshdl.view.outputs.clean",
+                    "when": "view == zhdl-view-output && view == zhdl-view-output",
+                    "command": "zhdl.view.outputs.clean",
                     "group": "navigation"
                 }
             ],
             "view/item/context": [
                 {
-                    "when": "viewItem == project && view == teroshdl-project",
-                    "command": "teroshdl.configuration.project",
+                    "when": "viewItem == project && view == zhdl-project",
+                    "command": "zhdl.configuration.project",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem == project && view == teroshdl-project",
-                    "command": "teroshdl.view.project.delete",
+                    "when": "viewItem == project && view == zhdl-project",
+                    "command": "zhdl.view.project.delete",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem == project && view == teroshdl-project",
-                    "command": "teroshdl.view.project.rename",
+                    "when": "viewItem == project && view == zhdl-project",
+                    "command": "zhdl.view.project.rename",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem == library && view == teroshdl-view-source",
-                    "command": "teroshdl.view.source.add_source_to_library",
+                    "when": "viewItem == library && view == zhdl-view-source",
+                    "command": "zhdl.view.source.add_source_to_library",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem == library && view == teroshdl-view-source",
-                    "command": "teroshdl.view.source.delete_library",
+                    "when": "viewItem == library && view == zhdl-view-source",
+                    "command": "zhdl.view.source.delete_library",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem == source && view == teroshdl-view-source",
-                    "command": "teroshdl.view.source.properties",
+                    "when": "viewItem == source && view == zhdl-view-source",
+                    "command": "zhdl.view.source.properties",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem == source && view == teroshdl-view-source",
-                    "command": "teroshdl.view.source.delete_source",
+                    "when": "viewItem == source && view == zhdl-view-source",
+                    "command": "zhdl.view.source.delete_source",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem == source && view == teroshdl-view-source",
-                    "command": "teroshdl.view.source.select_toplevel",
+                    "when": "viewItem == source && view == zhdl-view-source",
+                    "command": "zhdl.view.source.select_toplevel",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem == run && view == teroshdl-view-runs",
-                    "command": "teroshdl.view.runs.run",
+                    "when": "viewItem == run && view == zhdl-view-runs",
+                    "command": "zhdl.view.runs.run",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem =~ /logs/ && view == teroshdl-view-tasks",
-                    "command": "teroshdl.view.tasks.logs",
+                    "when": "viewItem =~ /logs/ && view == zhdl-view-tasks",
+                    "command": "zhdl.view.tasks.logs",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem =~ /report/ && view == teroshdl-view-tasks",
-                    "command": "teroshdl.view.tasks.report",
+                    "when": "viewItem =~ /report/ && view == zhdl-view-tasks",
+                    "command": "zhdl.view.tasks.report",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem =~ /timinganalyzer/ && view == teroshdl-view-tasks",
-                    "command": "teroshdl.view.tasks.timing_analyzer",
+                    "when": "viewItem =~ /timinganalyzer/ && view == zhdl-view-tasks",
+                    "command": "zhdl.view.tasks.timing_analyzer",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem =~ /technologymapviewer/ && view == teroshdl-view-tasks",
-                    "command": "teroshdl.view.tasks.technology_map_viewer",
+                    "when": "viewItem =~ /technologymapviewer/ && view == zhdl-view-tasks",
+                    "command": "zhdl.view.tasks.technology_map_viewer",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem =~ /snapshotviewer/ && view == teroshdl-view-tasks",
-                    "command": "teroshdl.view.tasks.snapshotviewer",
+                    "when": "viewItem =~ /snapshotviewer/ && view == zhdl-view-tasks",
+                    "command": "zhdl.view.tasks.snapshotviewer",
                     "group": "inline"
                 },
                 {
-                    "when": "viewItem == watcher && view == teroshdl-view-watcher",
-                    "command": "teroshdl.view.watcher.delete",
+                    "when": "viewItem == watcher && view == zhdl-view-watcher",
+                    "command": "zhdl.view.watcher.delete",
                     "group": "inline"
                 }
             ],
             "editor/title": [
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "teroshdl.generate_template",
+                    "command": "zhdl.generate_template",
                     "group": "navigation"
                 },
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "teroshdl.state_machine.viewer",
+                    "command": "zhdl.state_machine.viewer",
                     "group": "navigation"
                 },
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "teroshdl.netlist.viewer",
+                    "command": "zhdl.netlist.viewer",
                     "group": "navigation"
                 },
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "teroshdl.format",
+                    "command": "zhdl.format",
                     "group": "navigation"
                 },
                 {
                     "when": "resourceLangId == verilog || resourceLangId == systemverilog || resourceLangId == vhdl",
-                    "command": "teroshdl.documentation.module",
+                    "command": "zhdl.documentation.module",
                     "group": "navigation"
                 }
             ]
         },
         "commands": [
             {
-                "command": "teroshdl.go_to_parent",
+                "command": "zhdl.go_to_parent",
                 "title": "Go to parent file"
             },
             {
-                "command": "teroshdl.open",
+                "command": "zhdl.open",
                 "title": "Open file with ZHDL"
             },
             {
-                "command": "teroshdl.configuration.global",
+                "command": "zhdl.configuration.global",
                 "title": "ZHDL: Open Global Settings Menu"
             },
             {
-                "command": "teroshdl.verifySetup",
+                "command": "zhdl.verifySetup",
                 "title": "ZHDL: Verify Setup"
             },
             {
-                "command": "teroshdl.waveform",
+                "command": "zhdl.waveform",
                 "title": "Open waveform viewer"
             },
             {
-                "command": "teroshdl.view.project.add",
+                "command": "zhdl.view.project.add",
                 "icon": {
                     "light": "resources/icon/light/add.svg",
                     "dark": "resources/icon/dark/add.svg"
@@ -415,7 +393,7 @@
                 "title": "Add project"
             },
             {
-                "command": "teroshdl.configuration.project",
+                "command": "zhdl.configuration.project",
                 "icon": {
                     "light": "resources/icon/light/gear.svg",
                     "dark": "resources/icon/dark/gear.svg"
@@ -423,7 +401,7 @@
                 "title": "Open Project Settings"
             },
             {
-                "command": "teroshdl.view.project.delete",
+                "command": "zhdl.view.project.delete",
                 "icon": {
                     "light": "resources/icon/light/chrome-close.svg",
                     "dark": "resources/icon/dark/chrome-close.svg"
@@ -431,7 +409,7 @@
                 "title": "Delete project"
             },
             {
-                "command": "teroshdl.view.project.rename",
+                "command": "zhdl.view.project.rename",
                 "icon": {
                     "light": "resources/icon/light/edit.svg",
                     "dark": "resources/icon/dark/edit.svg"
@@ -439,7 +417,7 @@
                 "title": "Rename project"
             },
             {
-                "command": "teroshdl.view.source.save_project",
+                "command": "zhdl.view.source.save_project",
                 "icon": {
                     "light": "resources/icon/light/save.svg",
                     "dark": "resources/icon/dark/save.svg"
@@ -447,7 +425,7 @@
                 "title": "Save Project"
             },
             {
-                "command": "teroshdl.view.source.search",
+                "command": "zhdl.view.source.search",
                 "icon": {
                     "light": "resources/icon/light/search.svg",
                     "dark": "resources/icon/dark/search.svg"
@@ -455,7 +433,7 @@
                 "title": "Search"
             },
             {
-                "command": "teroshdl.view.source.add",
+                "command": "zhdl.view.source.add",
                 "icon": {
                     "light": "resources/icon/light/add.svg",
                     "dark": "resources/icon/dark/add.svg"
@@ -463,7 +441,7 @@
                 "title": "Add"
             },
             {
-                "command": "teroshdl.view.source.add_source_to_library",
+                "command": "zhdl.view.source.add_source_to_library",
                 "icon": {
                     "light": "resources/icon/light/add.svg",
                     "dark": "resources/icon/dark/add.svg"
@@ -471,7 +449,7 @@
                 "title": "Add to library"
             },
             {
-                "command": "teroshdl.view.source.delete_library",
+                "command": "zhdl.view.source.delete_library",
                 "icon": {
                     "light": "resources/icon/light/dash.svg",
                     "dark": "resources/icon/dark/dash.svg"
@@ -479,7 +457,7 @@
                 "title": "Delete library"
             },
             {
-                "command": "teroshdl.view.source.properties",
+                "command": "zhdl.view.source.properties",
                 "icon": {
                     "light": "resources/icon/light/gear.svg",
                     "dark": "resources/icon/dark/gear.svg"
@@ -487,7 +465,7 @@
                 "title": "File Properties"
             },
             {
-                "command": "teroshdl.view.source.delete_source",
+                "command": "zhdl.view.source.delete_source",
                 "icon": {
                     "light": "resources/icon/light/dash.svg",
                     "dark": "resources/icon/dark/dash.svg"
@@ -495,7 +473,7 @@
                 "title": "Delete source"
             },
             {
-                "command": "teroshdl.view.source.select_toplevel",
+                "command": "zhdl.view.source.select_toplevel",
                 "icon": {
                     "light": "resources/icon/light/check.svg",
                     "dark": "resources/icon/dark/check.svg"
@@ -503,7 +481,7 @@
                 "title": "Select source as toplevel"
             },
             {
-                "command": "teroshdl.view.dependency.refresh",
+                "command": "zhdl.view.dependency.refresh",
                 "icon": {
                     "light": "resources/icon/light/refresh.svg",
                     "dark": "resources/icon/dark/refresh.svg"
@@ -511,7 +489,7 @@
                 "title": "Refresh"
             },
             {
-                "command": "teroshdl.view.dependency.schematic",
+                "command": "zhdl.view.dependency.schematic",
                 "icon": {
                     "light": "resources/icon/light/list-tree.svg",
                     "dark": "resources/icon/dark/list-tree.svg"
@@ -519,7 +497,7 @@
                 "title": "Schematic viewer"
             },
             {
-                "command": "teroshdl.view.dependency.viewer",
+                "command": "zhdl.view.dependency.viewer",
                 "icon": {
                     "light": "resources/icon/light/dep.svg",
                     "dark": "resources/icon/dark/dep.svg"
@@ -527,7 +505,7 @@
                 "title": "Dependencies viewer"
             },
             {
-                "command": "teroshdl.view.runs.run_all",
+                "command": "zhdl.view.runs.run_all",
                 "icon": {
                     "light": "resources/icon/light/run-all.svg",
                     "dark": "resources/icon/dark/run-all.svg"
@@ -535,7 +513,7 @@
                 "title": "Run all"
             },
             {
-                "command": "teroshdl.view.runs.stop",
+                "command": "zhdl.view.runs.stop",
                 "icon": {
                     "light": "resources/icon/light/stop.svg",
                     "dark": "resources/icon/dark/stop.svg"
@@ -543,7 +521,7 @@
                 "title": "Stop"
             },
             {
-                "command": "teroshdl.view.runs.refresh",
+                "command": "zhdl.view.runs.refresh",
                 "icon": {
                     "light": "resources/icon/light/refresh.svg",
                     "dark": "resources/icon/dark/refresh.svg"
@@ -551,7 +529,7 @@
                 "title": "Refresh"
             },
             {
-                "command": "teroshdl.view.runs.run",
+                "command": "zhdl.view.runs.run",
                 "icon": {
                     "light": "resources/icon/light/run.svg",
                     "dark": "resources/icon/dark/run.svg"
@@ -559,7 +537,7 @@
                 "title": "ZHDL: Run Tool"
             },
             {
-                "command": "teroshdl.view.tasks.stop",
+                "command": "zhdl.view.tasks.stop",
                 "icon": {
                     "light": "resources/icon/light/stop.svg",
                     "dark": "resources/icon/dark/stop.svg"
@@ -567,7 +545,7 @@
                 "title": "Stop"
             },
             {
-                "command": "teroshdl.view.tasks.clean",
+                "command": "zhdl.view.tasks.clean",
                 "icon": {
                     "light": "resources/icon/light/trash.svg",
                     "dark": "resources/icon/dark/trash.svg"
@@ -575,7 +553,7 @@
                 "title": "Clean project"
             },
             {
-                "command": "teroshdl.view.tasks.logs",
+                "command": "zhdl.view.tasks.logs",
                 "icon": {
                     "light": "resources/icon/light/database.svg",
                     "dark": "resources/icon/dark/database.svg"
@@ -583,7 +561,7 @@
                 "title": "Open Log"
             },
             {
-                "command": "teroshdl.view.tasks.report",
+                "command": "zhdl.view.tasks.report",
                 "icon": {
                     "light": "resources/icon/light/output.svg",
                     "dark": "resources/icon/dark/output.svg"
@@ -591,7 +569,7 @@
                 "title": "Open Report"
             },
             {
-                "command": "teroshdl.view.tasks.timing_analyzer",
+                "command": "zhdl.view.tasks.timing_analyzer",
                 "icon": {
                     "light": "resources/icon/light/watch.svg",
                     "dark": "resources/icon/dark/watch.svg"
@@ -599,7 +577,7 @@
                 "title": "Open Timing Analyzer"
             },
             {
-                "command": "teroshdl.view.tasks.technology_map_viewer",
+                "command": "zhdl.view.tasks.technology_map_viewer",
                 "icon": {
                     "light": "resources/icon/light/search.svg",
                     "dark": "resources/icon/dark/search.svg"
@@ -607,7 +585,7 @@
                 "title": "Open Technology Map Viewer"
             },
             {
-                "command": "teroshdl.view.tasks.snapshotviewer",
+                "command": "zhdl.view.tasks.snapshotviewer",
                 "icon": {
                     "light": "resources/icon/light/eye.svg",
                     "dark": "resources/icon/dark/eye.svg"
@@ -615,63 +593,63 @@
                 "title": "Open Snapshop Viewer"
             },
             {
-                "command": "teroshdl.project.quartus.rtlAnalyzer",
+                "command": "zhdl.project.quartus.rtlAnalyzer",
                 "title": "ZHDL [Quartus]: Open RTL Analyzer"
             },
             {
-                "command": "teroshdl.project.quartus.compileDesigh",
+                "command": "zhdl.project.quartus.compileDesigh",
                 "title": "ZHDL [Quartus]: Run Compile Design"
             },
             {
-                "command": "teroshdl.project.quartus.analysisAndSynthesis",
+                "command": "zhdl.project.quartus.analysisAndSynthesis",
                 "title": "ZHDL [Quartus]: run Analysis and Synthesis"
             },
             {
-                "command": "teroshdl.project.quartus.analysisAndElaboration",
+                "command": "zhdl.project.quartus.analysisAndElaboration",
                 "title": "ZHDL [Quartus]: run Analysis and Elaboration"
             },
             {
-                "command": "teroshdl.project.quartus.synthesis",
+                "command": "zhdl.project.quartus.synthesis",
                 "title": "ZHDL [Quartus]: run Synthesis"
             },
             {
-                "command": "teroshdl.project.quartus.earlyTimingAnalysis",
+                "command": "zhdl.project.quartus.earlyTimingAnalysis",
                 "title": "ZHDL [Quartus]: run Early Timing Analysis"
             },
             {
-                "command": "teroshdl.project.quartus.fitter",
+                "command": "zhdl.project.quartus.fitter",
                 "title": "ZHDL [Quartus]: run Fitter"
             },
             {
-                "command": "teroshdl.project.quartus.fitterImplement",
+                "command": "zhdl.project.quartus.fitterImplement",
                 "title": "ZHDL [Quartus]: run Fitter Implement"
             },
             {
-                "command": "teroshdl.project.quartus.plan",
+                "command": "zhdl.project.quartus.plan",
                 "title": "ZHDL [Quartus]: run Plan"
             },
             {
-                "command": "teroshdl.project.quartus.place",
+                "command": "zhdl.project.quartus.place",
                 "title": "ZHDL [Quartus]: run Place"
             },
             {
-                "command": "teroshdl.project.quartus.route",
+                "command": "zhdl.project.quartus.route",
                 "title": "ZHDL [Quartus]: run Route"
             },
             {
-                "command": "teroshdl.project.quartus.fitterFinalize",
+                "command": "zhdl.project.quartus.fitterFinalize",
                 "title": "ZHDL [Quartus]: run Fitter Finalize"
             },
             {
-                "command": "teroshdl.project.quartus.timingAnalysisSignoff",
+                "command": "zhdl.project.quartus.timingAnalysisSignoff",
                 "title": "ZHDL [Quartus]: run Timing Analysis Signoff"
             },
             {
-                "command": "teroshdl.project.quartus.assembler",
+                "command": "zhdl.project.quartus.assembler",
                 "title": "ZHDL [Quartus]: run Assembler"
             },
             {
-                "command": "teroshdl.view.watcher.add",
+                "command": "zhdl.view.watcher.add",
                 "icon": {
                     "light": "resources/icon/light/add.svg",
                     "dark": "resources/icon/dark/add.svg"
@@ -679,7 +657,7 @@
                 "title": "Add"
             },
             {
-                "command": "teroshdl.view.watcher.delete",
+                "command": "zhdl.view.watcher.delete",
                 "icon": {
                     "light": "resources/icon/light/dash.svg",
                     "dark": "resources/icon/dark/dash.svg"
@@ -687,7 +665,7 @@
                 "title": "Delete watcher"
             },
             {
-                "command": "teroshdl.view.outputs.clean",
+                "command": "zhdl.view.outputs.clean",
                 "icon": {
                     "light": "resources/icon/light/trash.svg",
                     "dark": "resources/icon/dark/trash.svg"
@@ -695,7 +673,7 @@
                 "title": "Clean project"
             },
             {
-                "command": "teroshdl.generate_template",
+                "command": "zhdl.generate_template",
                 "icon": {
                     "light": "resources/icon/light/file-code.svg",
                     "dark": "resources/icon/dark/file-code.svg"
@@ -703,7 +681,7 @@
                 "title": "ZHDL: Generate template"
             },
             {
-                "command": "teroshdl.state_machine.viewer",
+                "command": "zhdl.state_machine.viewer",
                 "icon": {
                     "light": "resources/icon/light/state-machine.svg",
                     "dark": "resources/icon/dark/state-machine.svg"
@@ -711,7 +689,7 @@
                 "title": "State machine viewer"
             },
             {
-                "command": "teroshdl.netlist.viewer",
+                "command": "zhdl.netlist.viewer",
                 "icon": {
                     "light": "resources/icon/light/list-tree.svg",
                     "dark": "resources/icon/dark/list-tree.svg"
@@ -719,7 +697,7 @@
                 "title": "Schematic viewer"
             },
             {
-                "command": "teroshdl.format",
+                "command": "zhdl.format",
                 "icon": {
                     "light": "resources/icon/light/check.svg",
                     "dark": "resources/icon/dark/check.svg"
@@ -727,7 +705,7 @@
                 "title": "Format"
             },
             {
-                "command": "teroshdl.documentation.module",
+                "command": "zhdl.documentation.module",
                 "icon": {
                     "light": "resources/icon/light/book.svg",
                     "dark": "resources/icon/dark/book.svg"
@@ -795,9 +773,9 @@
                 ]
             },
             {
-                "id": "logTerosHDL",
+                "id": "logZHDL",
                 "extensions": [
-                    ".logTerosHDL"
+                    ".logZHDL"
                 ]
             },
             {
@@ -928,7 +906,7 @@
         ],
         "keybindings": [
             {
-                "command": "teroshdl.go_to_parent",
+                "command": "zhdl.go_to_parent",
                 "key": "alt+backspace",
                 "mac": "command+delete",
                 "when": "editorTextFocus"

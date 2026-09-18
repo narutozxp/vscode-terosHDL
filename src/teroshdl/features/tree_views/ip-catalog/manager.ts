@@ -46,8 +46,8 @@ export class IpCatalogManager extends BaseView{
     }
 
     set_commands() {
-        // vscode.commands.registerCommand("teroshdl.quartus.add_ip", () => this.add_ip());
-        vscode.commands.registerCommand("teroshdl.quartus.create_ip", (element) => this.create_ip(element));
+        // vscode.commands.registerCommand("zhdl.quartus.add_ip", () => this.add_ip());
+        vscode.commands.registerCommand("zhdl.quartus.create_ip", (element) => this.create_ip(element));
     }
 
     async create_ip(element: element.CatalogElement) {
@@ -89,5 +89,3 @@ export class IpCatalogManager extends BaseView{
         this.tree.refresh();
     }
 }
-
-

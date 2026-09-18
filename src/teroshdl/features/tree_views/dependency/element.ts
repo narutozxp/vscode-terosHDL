@@ -22,7 +22,7 @@ import { get_icon } from "../utils";
 import { get_filename } from "colibri/utils/file_utils";
 import { Multi_project_manager } from "colibri/project_manager/multi_project_manager";
 
-export const VIEW_ID = "teroshdl-view-dependency";
+export const VIEW_ID = "zhdl-view-dependency";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Elements
@@ -234,4 +234,3 @@ export class TreeItem extends vscode.TreeItem {
         this.children = children;
     }
 }
-

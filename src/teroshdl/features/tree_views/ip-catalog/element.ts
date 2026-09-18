@@ -22,7 +22,7 @@ import * as vscode from "vscode";
 import { get_icon } from "../utils";
 import { t_ipCatalogRep } from 'colibri/project_manager/tool/common';
 
-export const VIEW_ID = "teroshdl-view-ip-catalog";
+export const VIEW_ID = "zhdl-view-ip-catalog";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Elements
@@ -54,7 +54,7 @@ export class CatalogElement extends vscode.TreeItem {
             this.iconPath = get_icon("verilog");
             this.command = {
                 title: 'Create IP',
-                command: 'teroshdl.quartus.create_ip',
+                command: 'zhdl.quartus.create_ip',
                 arguments: [this]
             };
         }

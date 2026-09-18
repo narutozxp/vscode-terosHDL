@@ -40,7 +40,7 @@ export class Documenter_manager extends Base_webview {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     constructor(context: vscode.ExtensionContext, manager: Multi_project_manager) {
 
-        const activation_command = 'teroshdl.documentation.module';
+        const activation_command = 'zhdl.documentation.module';
         const id = "documenter";
 
         const resource_path = path_lib.join(context.extensionPath, 'resources', 'webviews', 'documenter', 'index.html');
@@ -220,7 +220,6 @@ export class Documenter_manager extends Base_webview {
         });
     }
 }
-
 
 
 

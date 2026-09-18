@@ -48,7 +48,7 @@ export class Output_manager extends BaseView{
         this.run_output_manager = run_output_manager;
         this.tree = new element.ProjectProvider(manager, run_output_manager);
 
-        vscode.commands.registerCommand("teroshdl.view.outputs.clean", (item) => this.clean());
+        vscode.commands.registerCommand("zhdl.view.outputs.clean", (item) => this.clean());
 
         this.treeView = vscode.window.createTreeView(element.ProjectProvider.getViewID(), {treeDataProvider: this.tree});
     }
@@ -111,4 +111,3 @@ export class Output_manager extends BaseView{
         return <e_clean_step>key;
     }
 }
-

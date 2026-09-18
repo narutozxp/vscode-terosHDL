@@ -105,12 +105,12 @@
         "configuration": "./configs/systemverilog.configuration.json"
     },
     {
-        "id": "logTerosHDL",
+        "id": "logZHDL",
         "aliases": [
-            "logTerosHDL"
+            "logZHDL"
         ],
         "extensions": [
-            ".logTerosHDL"
+            ".logZHDL"
         ]
     }
 ]
