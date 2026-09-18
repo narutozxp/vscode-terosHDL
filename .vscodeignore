@@ -18,3 +18,25 @@ resources/images/ChatGPT Image*.png
 **/.fuse_hidden*
 server/*.zip*
 server/*.tar.gz*
+
+# Development tools and generated test artifacts
+test-report/**
+coverage/**
+out_doc_api/**
+eslint.config.js
+jest.config.json
+esbuild.js
+copy_files.py
+clean.sh
+test_*.js
+resources/webviews/reporters/esbuild.js
+resources/webviews/fileConfiguration/esbuild.js
+
+# Standalone CLI is retained in the repository, outside the extension runtime
+bin/**
+out/colibri/commands/**
+
+# SQL.js uses the Node WASM build; preserve its runtime and package metadata
+node_modules/sql.js/dist/**
+!node_modules/sql.js/dist/sql-wasm.js
+!node_modules/sql.js/dist/sql-wasm.wasm

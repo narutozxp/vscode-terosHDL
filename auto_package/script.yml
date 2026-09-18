@@ -19,14 +19,11 @@
 - name: "generate-examples"
   command: "cd ./resources/project_manager; ./copy_examples.sh"
 
-- name: "pre-package"
-  command: "mkdir ./node_modules/teroshdl2/node_modules/onml/lib; cp ./node_modules/teroshdl2/node_modules/onml/*.js ./node_modules/teroshdl2/node_modules/onml/lib"
-
 - name: "package"
-  command: "npm run pre-package & vsce package --allow-star-activation"
+  command: "vsce package --allow-star-activation"
 
 - name: "package-prerelease"
-  command: "npm run pre-package & vsce package --pre-release -o ./pre-release.vsix --allow-star-activation"
+  command: "vsce package --pre-release -o ./pre-release.vsix --allow-star-activation"
 
 - name: "auto-package"
   command: "cd auto_package & ./gen.sh"

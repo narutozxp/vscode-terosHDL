@@ -17,6 +17,13 @@ A VS Code extension for ASIC and FPGA development, with Verilog, SystemVerilog a
 
 After upgrading, import old settings if needed and update custom keybindings to the new command names. See [Configuration file locations](#configuration-file-locations).
 
+## Current development changes (unreleased)
+
+- Incremental edit transport and text storage, with local extraction for assignments, declarations, module headers and affected modules.
+- Unsaved interfaces from other open project members are available to module and port completion; improved virtual-document handling and symbol ranges.
+- Smaller offline package: development-only dependencies and unused SQL.js builds are excluded, duplicate rendering resources are shared, and obsolete documentation assets are removed.
+- Added edit/undo, lifecycle and large-input regressions, plus an offline check for extracted VSIX packages.
+
 ## Features
 
 - Syntax highlighting, snippets and template generation.
@@ -67,27 +74,33 @@ On a blank line inside a module body, type a module name and select its completi
 
 Type `.` in an existing instance's connection list to complete unconnected ports, or in its `#(...)` parameter override list to complete parameters. Type `u_instance.` to complete the instance's module ports. Inside a `.port(...)` expression, completion uses signals from the current module.
 
-Ctags symbols and other files' module interfaces update after saves or disk changes. The current file's module interface and completion context are read from the editor buffer. Indexing parses syntax without HDL preprocessing or elaboration, so macro-generated interfaces may be incomplete. Initial completion waits for project indexing; later requests reuse the cache.
+Saved ctags symbols and disk module interfaces update after saves or disk changes. The current file's module interface and completion context are read from the editor buffer. With live parsing enabled, other open, unsaved project members also supply their current interfaces, including `.vh` and `.svh` members. Clean files reuse saved indexes, and unrelated open files are excluded. Indexing parses syntax without HDL preprocessing or elaboration, so macro-generated interfaces may be incomplete. Initial completion waits for project indexing; later requests reuse the cache.
 
 ### Incremental completion for unsaved changes (experimental)
 
 Select **Enable live parsing (experimental)** on the global settings **General** page (`live_parsing`). It updates unsaved Verilog and SystemVerilog signal completion and Outline entries, and is disabled by default.
 
-Open files share an on-demand background Worker that retains each file's previous syntax tree. Common module-body declaration edits update the affected declarations and return symbol deltas. Edits are coalesced for 30–100 ms, with a maximum wait of 150 ms; completion requests trigger pending updates earlier. Each file has at most one parsing request in flight, with subsequent edits merged into the latest version. Closing a file releases its tree; closing all tracked files terminates the Worker.
+Editing triggers updates through document-change events, with a 30–100 ms adaptive coalescing delay and a maximum scheduled wait of 150 ms from the first edit in a batch. Completion, Outline and project-interface requests submit pending updates immediately. These are scheduling delays; Worker queuing and execution add to the time before results appear. There is no periodic polling.
 
-Module headers, parameters, procedural blocks and syntax errors currently trigger full symbol extraction. These complex edits have higher latency and memory costs on large files. This experiment has not replaced the project's ctags index. Ctags-only symbol kinds still come from saved-file caches, and macros and includes are not expanded semantically. Disabling the option restores saved-file symbol completion.
+Open files share an on-demand background Worker. Normal edits send changed ranges and inserted text, retaining previous syntax trees and updating the affected symbols. Each file has at most one request in flight; edits arriving during parsing are accumulated and processed to reach the latest version. Closing files releases their states and skips queued work; closing all tracked files terminates the Worker. Already executing WASM work cannot be individually interrupted.
 
-Local synthetic benchmarks used Linux, a Xeon E5-2680 v4, Node.js 25.8.1 and `web-tree-sitter` 0.20.8, with four modules per file. These are median request round-trip times for common declaration edits, including Worker parsing, symbol delta transfer and client cache updates. They exclude the coalescing delay, VS Code rendering and initial project indexing:
+Safe assignment edits avoid traversing surrounding declarations. Declarations, procedural items, functions/tasks and generate edits use local extraction where possible. ANSI port and unchanged-name header parameter edits can extract only the module header. Parameter identity changes and non-ANSI interface coordination can require affected-module extraction; design-unit boundary changes and syntax-error recovery may require full extraction. A full extraction does not necessarily mean sending the full text again.
 
-| Lines | Symbols | Common declaration edit |
-|---|---|---|
-| 220 | 120 | About 2 ms |
-| 2,020 | 1,020 | About 3 ms |
-| 20,020 | 10,020 | About 23 ms |
+The live symbol set mainly covers modules, ports, registers, nets, instances and constants. Other ctags kinds still come from available saved caches and may be stale while editing. Function/block visibility is not yet a complete SystemVerilog scope model. Virtual documents support local live completion and Outline, but do not have the full file-based project index. Macros and includes are not expanded: editing a header does not reliably invalidate all referring files' preprocessed semantics. Disabling the option restores saved-file symbol completion.
 
-In a separate stress test, initial analysis of the 20,000-line file took about 1.2 seconds including Worker startup. Header changes or incomplete statements took about 0.55–0.61 seconds, mainly due to full module metadata and symbol extraction; incremental syntax parsing itself took about 20–23 ms.
+A local benchmark used Node.js 25.8.1 and a synthetic module with 10,000 declarations (about 229,050 UTF-16 characters). The following values are medians over 10 edits, including Worker execution, message transfer and client delta merging. They exclude the scheduling delay, initial project indexing, complete completion-item construction and VS Code rendering:
 
-During continuous editing, total test-process RSS was about 400–436 MiB, including the main thread, Worker and WASM memory. This is not the Worker's exclusive memory usage and does not establish the absence of long-term leaks. Live parsing therefore remains disabled by default, pending verification in actual extension hosts.
+| Edit | Request round-trip median |
+|---|---|
+| Declaration width | 10.44 ms |
+| Procedural assignment expression | 7.81 ms |
+| ANSI port direction | 9.38 ms |
+| Header parameter default | 11.97 ms |
+| Generate condition | 9.10 ms |
+
+First analysis, including Worker startup, was about 693 ms in a single measurement. A separate 100-module file with 100 declarations per module took about 7.28 ms for a body-parameter edit; this does not predict the cost of editing a parameter in one huge module. Continuous edits in these cases required no full-text reads by the Buffer service. The completion provider itself still reads text to identify context.
+
+The regression matrix covers 122 edit categories and their undo operations, with additional checks for version recovery, document lifetimes, Unicode coordinates, deep nesting and large declarations. Comparison with a fresh parse validates incremental consistency, not complete HDL compiler semantics. Peak memory and end-to-end UI performance on large real projects remain to be established, so live parsing stays experimental and disabled by default. See the [architecture review and remaining limitations](docs/live_parsing_review.md).
 
 ### Lint diagnostic updates
 
@@ -98,6 +111,12 @@ Once the selected linter is configured and enabled, edits trigger diagnostic upd
 - Verible LSP: `v0.0-4219-g3275ab72`, with Linux x86_64 and Windows x64 binaries.
 - Universal Ctags: `6.2.0 (ab95af1)`, from the official 2026-09-16 nightly build, with Linux x86_64, macOS Intel and Windows x86 binaries.
 - Versions, download sources and SHA-256 checksums are recorded in `server/binaries.json`. Run `python3 server/update_binaries.py` to reinstall the pinned versions. Update the manifest when changing versions.
+
+## Offline use and package size
+
+Built-in parsers, Yosys, Pyodide, SQL.js, Python wheel files and bundled native tools remain in the VSIX; this cleanup introduces no runtime downloads. Install a compatible VSIX in the environment running the extension. For Remote SSH, WSL and containers, local tool paths and binary compatibility refer to that remote environment. External tools such as GHDL, Verilator, Vivado and Quartus must already be installed and configured to use their integrations offline. Online documentation and additional package downloads still need a connection.
+
+The measured package contents decreased from about 290 MiB to 182 MiB uncompressed (about 37%); a test VSIX was about 51.2 MiB compressed. This is a local build measurement, not a guarantee for every release. The change removes development-only dependencies, unused SQL.js variants, duplicate rendering libraries and obsolete documentation resources. Existing icons and offline runtime resources are retained. See the [package cleanup record and verification scope](docs/package_cleanup.md).
 
 ## Configuration file locations
 
@@ -146,16 +165,32 @@ node node_modules/jest/bin/jest.js tests/teroshdl tests/parser --runInBand --cov
 
 Worker tests use compiled files under `out`, so compile before testing source changes. `npm run compile` already copies resources and builds both Webview bundles; you do not need to run those steps individually.
 
+Build a VSIX with VSCE installed:
+
+```bash
+npm install -g @vscode/vsce
+npm run package
+```
+
+Packaging runs the existing example-refresh and compilation steps; refreshing upstream examples requires Git/network access during the build. This is separate from running the installed extension offline. Extract the resulting VSIX and validate its bundled resources with:
+
+```bash
+node tests/packaging/offline_smoke.cjs /absolute/path/to/extracted/extension
+```
+
+The check uses the extracted package, blocks Node network APIs (also in parser workers), and exercises SQLite, YAML, parsing, Graphviz, basic Python/stdlib, Yosys and Webview resource bindings. It is not a complete VS Code UI or operating-system network-isolation test.
+
 To check keyword completion, open and save a `.v` or `.sv` file and confirm its language mode is Verilog or SystemVerilog. Type prefixes such as `alw` or `pos` and press `Ctrl+Space`. SystemVerilog files should also offer `always_ff`, `always_comb` and `logic`.
 
 ## TODO
 
-- [ ] Cache interfaces and symbols per module and recover incomplete declarations locally to reduce full-file extraction after header, parameter and syntax-error edits.
-- [ ] Extend incremental updates to procedural blocks, functions and tasks, and improve SystemVerilog class, interface and package scope handling.
-- [ ] Use edit-event change ranges directly to reduce full-text comparisons, symbol array copies and position shifts; evaluate compact storage and lazy position calculation.
+- [ ] Cache declaration contributions within modules and improve local recovery to reduce remaining module/full extraction after parameter identity changes, non-ANSI interface edits and syntax errors.
+- [ ] Build a finer scope graph and extend the live symbol set for SystemVerilog functions, tasks, classes, interfaces and packages.
+- [ ] Extract disjoint edit intervals separately; evaluate lazy positions to reduce remaining linear symbol and line-index updates.
 - [ ] Unify saved-file, editor-buffer and project parsing caches to avoid duplicate work and move expensive initial project analysis off the extension's main thread.
-- [ ] Use unsaved symbols for hover and go to definition, sharing versions and scopes across completion, Outline, hover and navigation; evaluate project-level macro and include handling.
-- [ ] Add memory budgets, cache eviction and task priorities for large and multiple files. Test prolonged editing, repeated opening and closing, rapid edits and actual UI response before considering enabling live parsing by default.
+- [ ] Use unsaved symbols for hover and go to definition, sharing versions and scopes across consumers; add preprocessing and transitive macro/include dependency invalidation.
+- [ ] Add project/WASM memory budgets, cache eviction and task priorities for large and multiple files. Test prolonged editing, repeated opening and closing, rapid edits and actual UI response before considering enabling live parsing by default.
+- [ ] Evaluate platform-specific offline packages and extension bundling while preserving dynamic loads, Worker entry points and runtime resources.
 - [ ] Rebuild and validate compatible HDL WASM grammars before upgrading `web-tree-sitter`, and migrate its APIs and imports. The existing WASM binaries could not be used directly with the tested newer version.
 - [ ] Bound per-file lint concurrency, discard stale diagnostics, and improve cancellation, timeouts, exception handling and temporary-file cleanup; evaluate configurable refresh delays.
 - [ ] Verify Axios `navigator` compatibility in the extension host and evaluate lazy loading for optional tools such as Sandpiper.
@@ -165,6 +200,8 @@ To check keyword completion, open and save a `.v` or `.sv` file and confirm its 
 
 ## Documentation and feedback
 
+- [Live parsing architecture, benchmarks and limitations](docs/live_parsing_review.md)
+- [Offline package cleanup and checks](docs/package_cleanup.md)
 - [Repository documentation](docs/)
 - [Report an issue](https://github.com/narutozxp/vscode-terosHDL/issues)
 - [Upstream TerosHDL documentation](https://terostechnology.github.io/terosHDLdoc/) for shared features.

@@ -35,6 +35,7 @@ export default class VerilogDocumentSymbolProvider implements DocumentSymbolProv
 
     private logger: Logger;
     private context: ExtensionContext;
+    private outlines = new WeakMap<Symbol[], DocumentSymbol[]>();
     constructor(logger: Logger, context: ExtensionContext, private cache: FileSymbolCache = CtagsManager.fileCache) {
         this.logger = logger;
         this.context = context;
@@ -63,12 +64,22 @@ export default class VerilogDocumentSymbolProvider implements DocumentSymbolProv
     }
 
     provideDocumentSymbols(document: TextDocument, token: CancellationToken): Thenable<DocumentSymbol[]> {
+        if (document.isClosed || token?.isCancellationRequested) { return Promise.resolve([]); }
         if (this.cache) {
-            const live = document.isDirty && ['verilog', 'systemverilog'].includes(document.languageId) &&
+            const version = document.version;
+            const live = (document.isDirty || document.uri.scheme !== 'file') && ['verilog', 'systemverilog'].includes(document.languageId) &&
                 getIndexingSettings().liveParsing;
-            return (live ? this.cache.getBuffer(document) : this.cache.get(document.uri.fsPath)).then(snapshot => {
-                if (token?.isCancellationRequested) { return []; }
-                return this.buildDocumentSymbolList(snapshot.symbols);
+            if (!live && document.uri.scheme && document.uri.scheme !== 'file') { return Promise.resolve([]); }
+            return (live ? this.cache.getBuffer(document).catch(error => {
+                this.logger.log(`Live outline parsing failed: ${error}`, Log_Severity.Warn);
+                return !document.uri.scheme || document.uri.scheme === 'file' ? this.cache.get(document.uri.fsPath) : undefined;
+            }) : this.cache.get(document.uri.fsPath)).then(snapshot => {
+                if (!snapshot || document.isClosed || token?.isCancellationRequested || document.version !== version) { return []; }
+                let outline = this.outlines.get(snapshot.symbols);
+                if (!outline) {
+                    outline = this.buildDocumentSymbolList(snapshot.symbols); this.outlines.set(snapshot.symbols, outline);
+                }
+                return outline;
             }).catch(error => { this.logger.log(`Outline indexing failed: ${error}`, Log_Severity.Error); return []; });
         }
         return new Promise((resolve) => {
@@ -133,16 +144,20 @@ export default class VerilogDocumentSymbolProvider implements DocumentSymbolProv
     // find the appropriate container RECURSIVELY and add to its childrem
     // return true: if done
     // return false: if container not found
-    findContainer(con: DocumentSymbol, sym: DocumentSymbol): boolean | undefined {
+    findContainer(con: DocumentSymbol, sym: DocumentSymbol, containers?: Map<DocumentSymbol, DocumentSymbol[]>): boolean | undefined {
         let res: boolean | undefined = false;
-        for (let i of con.children) {
+        for (let i of containers ? containers.get(con) ?? [] : con.children) {
             if (this.isContainer(i.kind) && i.range.contains(sym.range)) {
-                res = this.findContainer(i, sym);
+                res = this.findContainer(i, sym, containers);
                 if (res) { return true; };
             }
         }
         if (!res) {
             con.children.push(sym);
+            if (containers && this.isContainer(sym.kind)) {
+                const children = containers.get(con) ?? [];
+                children.push(sym); containers.set(con, children);
+            }
             return true;
         }
     }
@@ -151,27 +166,15 @@ export default class VerilogDocumentSymbolProvider implements DocumentSymbolProv
     // TODO: Use parentscope/parenttype of symbol to construct heirarchial DocumentSymbol []
     buildDocumentSymbolList(symbolsList: Symbol[]): DocumentSymbol[] {
 
-        function is_in_list(list, value) {
-            for (let i = 0; i < list.length; i++) {
-                const element = list[i];
-                if (element.name === value.name && element.type === value.type
-                    && element.startPosition.line === value.startPosition.line && element.endPosition.line === value.endPosition.line) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        let symbols_list_unique: Symbol[] = [];
-
-        for (let i = 0; i < symbolsList.length; i++) {
-            const element = symbolsList[i];
-            let is_here = is_in_list(symbols_list_unique, element);
-            if (is_here === false) {
-                symbols_list_unique.push(element);
-            }
-        }
+        const seen = new Set<string>();
+        let symbols_list_unique = symbolsList.filter(symbol => {
+            const key = JSON.stringify([symbol.name, symbol.type, symbol.startPosition.line, symbol.endPosition.line]);
+            if (seen.has(key)) { return false; }
+            seen.add(key); return true;
+        });
 
         let list: DocumentSymbol[] = [];
+        const containers = new Map<DocumentSymbol, DocumentSymbol[]>();
         symbols_list_unique = symbols_list_unique.sort((a, b): number => {
             if (a.startPosition.isBefore(b.startPosition)) { return -1; };
             if (a.startPosition.isAfter(b.startPosition)) { return 1; };
@@ -193,7 +196,7 @@ export default class VerilogDocumentSymbolProvider implements DocumentSymbolProv
                 let done: boolean = false;
                 for (let j of list) {
                     if (this.isContainer(j.kind) && j.range.contains(sym.range)) {
-                        this.findContainer(j, sym);
+                        this.findContainer(j, sym, containers);
                         done = true;
                         break;
                     }

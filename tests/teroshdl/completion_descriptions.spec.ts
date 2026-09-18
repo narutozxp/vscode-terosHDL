@@ -7,6 +7,7 @@ import { FileSymbolCache } from '../../src/teroshdl/features/language_provider/i
 import { ProjectLanguageService } from '../../src/teroshdl/features/language_provider/index/projectService';
 import { buildInstantiationSnippet } from '../../src/teroshdl/features/language_provider/index/instantiationSnippet';
 import { GlobalConfigManager } from '../../src/colibri/config/config_manager';
+import * as completionScopes from '../../src/teroshdl/features/language_provider/ctags/providers/completionScopes';
 
 beforeEach(() => GlobalConfigManager.newInstance(''));
 
@@ -184,6 +185,41 @@ describe('Project module completion and instantiation', () => {
 });
 
 describe('Unsaved signal completion with live parsing enabled', () => {
+    it('parses virtual buffers with precise columns and does not merge same-path saved tags', async () => {
+        const config = GlobalConfigManager.getInstance().get_config();
+        config.general.general.live_parsing = true;
+        GlobalConfigManager.getInstance().set_config(config);
+        const cache = new FileSymbolCache(async () => []);
+        const { BufferLanguageService } = require('../../out/teroshdl/features/language_provider/index/bufferService');
+        cache.buffers.dispose(); (cache as any).buffers = new BufferLanguageService(() => {});
+        const source = 'module top(input clk); wire added; endmodule';
+        const doc: any = { uri: { scheme: 'untitled', fsPath: '/same.sv', toString: () => 'untitled:/same.sv' },
+            languageId: 'systemverilog', version: 1, getText: () => source, offsetAt: () => source.indexOf('wire') };
+        const peek = jest.spyOn(cache, 'peek').mockReturnValue({ source: '', symbols: [new Symbol('stale_class', 'class', '', 0, '', '')] } as any);
+        const saved = jest.spyOn(cache, 'get');
+        try {
+            const snapshot = await cache.getBuffer(doc);
+            const signal = snapshot.symbols.find(symbol => symbol.name === 'added');
+            expect(signal.startPosition.character).toBe(source.indexOf('added'));
+            expect(signal.endPosition.character).toBe(source.indexOf('added') + 5);
+            const local = new CompletionProvider({ log() {} } as any, cache);
+            const items = await local.provideCompletionItems(doc, undefined, undefined, undefined);
+            expect(items.some(item => item.insertText === 'added')).toBe(true);
+            expect(items.some(item => item.insertText === 'stale_class')).toBe(false);
+            expect(peek).not.toHaveBeenCalled(); expect(saved).not.toHaveBeenCalled();
+        } finally { cache.dispose(); }
+    });
+
+    it('skips source reads and indexing for already cancelled or closed completion requests', async () => {
+        const cache = { getBuffer: jest.fn(), get: jest.fn() };
+        const local = new CompletionProvider({ log() {} } as any, cache as any);
+        const doc: any = { isClosed: false, getText: jest.fn(() => { throw new Error('Unexpected read'); }) };
+        expect(await local.provideCompletionItems(doc, undefined, { isCancellationRequested: true } as any, undefined)).toEqual([]);
+        doc.isClosed = true;
+        expect(await local.provideCompletionItems(doc, undefined, undefined, undefined)).toEqual([]);
+        expect(doc.getText).not.toHaveBeenCalled(); expect(cache.getBuffer).not.toHaveBeenCalled();
+    });
+
     it('shows new signals and updated widths even with an incomplete following statement', async () => {
         const config = GlobalConfigManager.getInstance().get_config();
         config.general.general.live_parsing = true;
@@ -212,4 +248,53 @@ describe('Unsaved signal completion with live parsing enabled', () => {
             cache.dispose();
         }
     });
+    it('shares buffer snapshots and converted symbols, and consumes worker scopes without rescanning', async () => {
+        const config = GlobalConfigManager.getInstance().get_config();
+        config.general.general.live_parsing = true;
+        GlobalConfigManager.getInstance().set_config(config);
+        const cache = new FileSymbolCache(async () => []);
+        const { BufferLanguageService } = require('../../out/teroshdl/features/language_provider/index/bufferService');
+        cache.buffers.dispose(); (cache as any).buffers = new BufferLanguageService(() => {});
+        const document: any = {
+            uri: { scheme: 'file', fsPath: '/tmp/zhdl-live-shared.sv', toString: () => 'file:///tmp/zhdl-live-shared.sv' },
+            languageId: 'systemverilog', version: 1,
+            source: 'module top(input clk);\nreg a;\nreg b;\nalways @(posedge clk) a <= 1;\nendmodule',
+            getText: jest.fn(function () { return this.source; }), offsetAt: () => 30
+        };
+        const scopes = jest.spyOn(completionScopes, 'getCompletionScopes');
+        try {
+            const first = cache.getBuffer(document);
+            expect(cache.getBuffer(document)).toBe(first);
+            const initial = await first;
+            const reads = document.getText.mock.calls.length;
+            expect(await cache.getBuffer(document)).toBe(initial);
+            expect(document.getText.mock.calls.length).toBe(reads);
+            const provider = new CompletionProvider({ log() {} } as any, cache);
+            await provider.provideCompletionItems(document, undefined, undefined, undefined);
+            expect(scopes).not.toHaveBeenCalled();
+            const beforeEditReads = document.getText.mock.calls.length;
+            const offset = document.source.indexOf('reg a;') + 4;
+            document.source = document.source.replace('reg a;', 'reg c;'); document.version++;
+            cache.buffers.changed(document, [{ rangeOffset: offset, rangeLength: 1, text: 'c',
+                range: { start: { line: 1, character: 4 }, end: { line: 1, character: 5 } } }] as any);
+            const changed = await cache.getBuffer(document);
+            expect(document.getText.mock.calls.length).toBe(beforeEditReads);
+            expect(changed.symbols.find(symbol => symbol.name === 'b')).toBe(initial.symbols.find(symbol => symbol.name === 'b'));
+            expect(changed.symbols.some(symbol => symbol.name === 'a')).toBe(false);
+            const literal = document.source.indexOf('a <= 1') + 'a <= '.length;
+            const lines = document.source.slice(0, literal).split('\n');
+            const column = lines[lines.length - 1].length;
+            document.source = document.source.replace('a <= 1', 'a <= 2'); document.version++;
+            cache.buffers.changed(document, [{ rangeOffset: literal, rangeLength: 1, text: '2',
+                range: { start: { line: 3, character: column }, end: { line: 3, character: column + 1 } } }] as any);
+            const expression = await cache.getBuffer(document);
+            expect(expression.symbols).toBe(changed.symbols);
+            expect(document.getText.mock.calls.length).toBe(beforeEditReads);
+            await provider.provideCompletionItems(document, undefined, undefined, undefined);
+            expect(scopes).not.toHaveBeenCalled();
+            cache.closeBuffer(document);
+            expect(await cache.getBuffer(document)).not.toBe(expression);
+        } finally { scopes.mockRestore(); cache.dispose(); }
+    });
+
 });

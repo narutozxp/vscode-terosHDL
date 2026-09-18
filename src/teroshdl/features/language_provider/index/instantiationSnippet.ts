@@ -50,9 +50,12 @@ export function buildInstantiationSnippet(module: VerilogModule): SnippetString 
     snippet.appendText(' (');
     if (module.ports.length) {
         snippet.appendText('\n');
-        const width = Math.max(...module.ports.map(port => hdlName(port.name).length));
-        const connectionWidth = Math.max(...module.ports.map((port, index) =>
-            hdlName(port.name).length + (index < module.ports.length - 1 ? 1 : 0)));
+        let width = 0; let connectionWidth = 0;
+        module.ports.forEach((port, index) => {
+            const length = hdlName(port.name).length;
+            width = Math.max(width, length);
+            connectionWidth = Math.max(connectionWidth, length + (index < module.ports.length - 1 ? 1 : 0));
+        });
         module.ports.forEach((port, index) => {
             snippet.appendText(`\t.${hdlName(port.name).padEnd(width)}(`);
             snippet.appendPlaceholder(hdlName(port.name), placeholder++);

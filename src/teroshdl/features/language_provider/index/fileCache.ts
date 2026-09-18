@@ -4,13 +4,18 @@ import type { Symbol } from '../ctags/ctags';
 import { VerilogModule, VerilogProjectParser } from 'colibri/parser/ts_verilog/project_model';
 import type { TextDocument } from 'vscode';
 import { BufferLanguageService } from './bufferService';
+import type { CompletionScope } from '../ctags/providers/completionScopes';
+import type { BufferSymbol } from './bufferWorker';
 
-export interface FileSnapshot {
+export interface LanguageSnapshot {
     filePath: string;
-    source: string;
     symbols: Symbol[];
     modules: VerilogModule[];
+    scopes?: CompletionScope[];
 }
+
+export interface FileSnapshot extends LanguageSnapshot { source: string }
+export interface LiveFileSnapshot extends LanguageSnapshot { version: number }
 
 export function fileKey(filePath: string): string {
     const resolved = path.resolve(filePath);
@@ -33,6 +38,9 @@ export class FileSymbolCache {
     private disposed = false;
     private parser = new VerilogProjectParser();
     private bufferParses = new Set<Promise<VerilogModule[]>>();
+    private liveSnapshots = new WeakMap<TextDocument, { version: number; epoch: number; saved?: FileSnapshot; work: Promise<LiveFileSnapshot> }>();
+    private liveSymbols = new WeakMap<BufferSymbol, Symbol>();
+    private liveArrays = new WeakMap<BufferSymbol[], Symbol[]>();
 
     constructor(private loadSymbols: (filePath: string, source: string) => Promise<Symbol[]>) {}
 
@@ -77,10 +85,19 @@ export class FileSymbolCache {
             const source = await fs.promises.readFile(key, 'utf8');
             const symbols = await this.loadSymbols(key, source);
             const modules = /\.(?:v|sv|vh|svh)$/i.test(key) ? await this.parser.parse(source, key) : [];
+            const byNameLine = new Map<string, VerilogModule>();
+            const endLines = new Map<VerilogModule, number>();
+            let line = 0; let newline = source.indexOf('\n');
+            for (const module of [...modules].sort((a, b) => a.end - b.end)) {
+                while (newline >= 0 && newline < module.end) { line++; newline = source.indexOf('\n', newline + 1); }
+                endLines.set(module, line);
+                const key = `${module.name}\0${module.line}`;
+                if (!byNameLine.has(key)) { byNameLine.set(key, module); }
+            }
             for (const symbol of symbols) {
                 if (symbol.type !== 'module') { continue; }
-                const module = modules.find(module => module.name === symbol.name && module.line === symbol.startPosition.line);
-                if (module) { symbol.setEndPosition(source.slice(0, module.end).split('\n').length - 1); }
+                const module = byNameLine.get(`${symbol.name}\0${symbol.startPosition.line}`);
+                if (module) { symbol.setEndPosition(endLines.get(module)); }
             }
             const currentStamp = fingerprint(await fs.promises.stat(key));
             if (this.disposed) { throw new Error('File symbol cache disposed'); }
@@ -100,29 +117,61 @@ export class FileSymbolCache {
         try { return await work; } finally { this.bufferParses.delete(work); }
     }
 
-    async getBuffer(document: TextDocument): Promise<FileSnapshot> {
+    getBuffer(document: TextDocument): Promise<LiveFileSnapshot> {
+        if (this.disposed) { return Promise.reject(new Error('File symbol cache disposed')); }
+        if (document.isClosed) { return Promise.reject(new Error('Document closed')); }
         const version = document.version;
-        const source = document.getText();
+        const onDisk = !document.uri.scheme || document.uri.scheme === 'file';
+        const epoch = onDisk ? this.epochs.get(fileKey(document.uri.fsPath)) ?? 0 : 0;
+        const saved = onDisk ? this.peek(document.uri.fsPath) : undefined;
+        const existing = this.liveSnapshots.get(document);
+        if (existing?.version === version && existing.epoch === epoch && existing.saved === saved) { return existing.work; }
+        const entry = { version, epoch, saved, work: this.bufferSnapshot(document, version) };
+        this.liveSnapshots.set(document, entry);
+        void entry.work.catch(() => {
+            if (this.liveSnapshots.get(document) === entry) { this.liveSnapshots.delete(document); }
+        });
+        return entry.work;
+    }
+
+    private async bufferSnapshot(document: TextDocument, version: number): Promise<LiveFileSnapshot> {
         const snapshot = await this.buffers.get(document);
         if (snapshot.version !== version) { return this.getBuffer(document); }
-        // Avoid loading VS Code-dependent symbols inside the parser worker.
-        const SymbolClass = require('../ctags/ctags').Symbol;
-        const symbols: Symbol[] = snapshot.symbols.map(record => {
-            const symbol = new SymbolClass(record.name, record.type, '', record.line,
-                record.parentScope, record.parentType, record.endLine, true);
-            symbol.outlineDetail = record.outlineDetail; symbol.typeRef = record.typeRef;
-            return symbol;
-        });
+        let converted = this.liveArrays.get(snapshot.symbols);
+        if (!converted) {
+            // Avoid loading VS Code-dependent symbols inside the parser worker.
+            const SymbolClass = require('../ctags/ctags').Symbol;
+            const PositionClass = require('vscode').Position;
+            converted = snapshot.symbols.map(record => {
+                const cached = this.liveSymbols.get(record);
+                if (cached) { return cached; }
+                const symbol = new SymbolClass(record.name, record.type, '', record.line,
+                    record.parentScope, record.parentType, record.endLine, true);
+                symbol.outlineDetail = record.outlineDetail; symbol.typeRef = record.typeRef;
+                if (record.column !== undefined) { symbol.startPosition = new PositionClass(record.line, record.column); }
+                if (record.endColumn !== undefined) { symbol.endPosition = new PositionClass(record.endLine, record.endColumn); }
+                this.liveSymbols.set(record, symbol);
+                return symbol;
+            });
+            this.liveArrays.set(snapshot.symbols, converted);
+        }
         const supported = new Set(['module', 'port', 'register', 'net', 'instance', 'constant']);
-        const saved = this.peek(document.uri.fsPath);
+        const saved = !document.uri.scheme || document.uri.scheme === 'file' ? this.peek(document.uri.fsPath) : undefined;
         // Keep ctags-only kinds available while the buffer parser is being evaluated.
-        symbols.push(...(saved?.symbols.filter(symbol => !supported.has(symbol.type)) ?? []));
-        return { filePath: document.uri.fsPath, source, symbols, modules: snapshot.modules };
+        const extra = saved?.symbols.filter(symbol => !supported.has(symbol.type)) ?? [];
+        const symbols = extra.length ? [...converted, ...extra] : converted;
+        return { filePath: document.uri.fsPath, version, symbols, modules: snapshot.modules, scopes: snapshot.scopes };
+    }
+
+    closeBuffer(document: TextDocument): void {
+        this.liveSnapshots.delete(document);
+        this.buffers.close(document);
     }
 
     dispose(): void {
         this.disposed = true;
         this.buffers.dispose();
+        this.liveSnapshots = new WeakMap(); this.liveSymbols = new WeakMap(); this.liveArrays = new WeakMap();
         this.entries.clear(); this.listeners.clear();
         // A running load may still be awaiting parser initialization; don't delete its parser early.
         void Promise.allSettled([...this.pending.values(), ...this.bufferParses]).then(() => this.parser.dispose());

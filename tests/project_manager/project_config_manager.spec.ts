@@ -70,6 +70,7 @@ describe('ProjectManager Configuration', () => {
         // Change a value from default to a different one
         const originalConfig = projectManager.get_config();
         originalConfig.general.general = {
+            ...originalConfig.general.general,
             pypath: "A",
             makepath: "B",
             go_to_definition_vhdl: true,
@@ -90,6 +91,7 @@ describe('ProjectManager Configuration', () => {
         // Change a value from default to a different one
         const originalConfig = projectManager.get_config();
         originalConfig.general.general = {
+            ...originalConfig.general.general,
             pypath: "AAAAAAAAAAAAAAAAAAAAAAAA",
             makepath: undefined as any,
             go_to_definition_vhdl: undefined as any,
@@ -210,4 +212,3 @@ describe('ProjectManager Configuration', () => {
     });
 
 });
-

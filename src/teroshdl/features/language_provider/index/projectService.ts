@@ -16,7 +16,7 @@ export class ProjectLanguageService {
     private index: ProjectSymbolIndex;
     private workspaceFiles = new Map<string, Promise<string[]>>();
     private externalDirectories = new Set<string>();
-    private bufferModels = new Map<string, { version: number; models: Promise<VerilogModule[]> }>();
+    private bufferModels = new Map<string, { document: vscode.TextDocument; version: number; models: Promise<VerilogModule[]> }>();
     private disposed = false;
     private configSubscription: { dispose(): void };
 
@@ -32,16 +32,16 @@ export class ProjectLanguageService {
         context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => this.bufferModels.delete(document.uri.toString())));
         context.subscriptions.push(vscode.workspace.onDidChangeTextDocument?.(event => {
             if (getIndexingSettings().liveParsing) {
-                cache.buffers.changed(event.document);
+                cache.buffers.changed(event.document, event.contentChanges);
             }
         }) ?? { dispose() {} });
-        context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => cache.buffers.close(document)));
+        context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => cache.closeBuffer(document)));
         this.configSubscription = GlobalConfigManager.getInstance().onDidChange(() => {
             this.bufferModels.clear();
             this.workspaceFiles.clear();
             for (const document of vscode.workspace.textDocuments) {
                 if (!getIndexingSettings().liveParsing) {
-                    cache.buffers.close(document);
+                    cache.closeBuffer(document);
                 }
             }
         });
@@ -101,16 +101,31 @@ export class ProjectLanguageService {
     }
 
     async modules(document: vscode.TextDocument): Promise<VerilogModule[]> {
-        if (this.disposed || document.uri.scheme !== 'file') { return []; }
+        if (this.disposed || document.isClosed || document.uri.scheme !== 'file') { return []; }
         const project = await this.project(document);
         this.index.setFiles(project.id, project.files);
         const models = await this.index.modules(project.id);
-        // The edited file's module headers come from the current buffer, without running ctags on keystrokes.
+        // Every open project file can supply an unsaved interface to consumers in another file.
+        const live = getIndexingSettings().liveParsing;
+        const membership = new Set(project.files.map(fileKey));
+        const overlays = new Map<string, vscode.TextDocument>();
+        if (live) {
+            for (const open of vscode.workspace.textDocuments) {
+                if (!open.isClosed && open.isDirty !== false && open.uri.scheme === 'file' && /\.(?:v|sv|vh|svh)$/i.test(open.uri.fsPath) && membership.has(fileKey(open.uri.fsPath))) {
+                    overlays.set(fileKey(open.uri.fsPath), open);
+                }
+            }
+        }
+        overlays.set(fileKey(document.uri.fsPath), document);
+        const local = await Promise.all([...overlays.values()].map(open => this.bufferModules(open, live)));
+        return [...models.filter(model => !overlays.has(fileKey(model.filePath))), ...local.flat()];
+    }
+
+    private async bufferModules(document: vscode.TextDocument, live: boolean): Promise<VerilogModule[]> {
         const key = document.uri.toString();
         let buffer = this.bufferModels.get(key);
-        if (!buffer || buffer.version !== document.version) {
-            const live = getIndexingSettings().liveParsing;
-            buffer = { version: document.version, models: live ? this.cache.buffers.get(document).then(snapshot => snapshot.modules) :
+        if (!buffer || buffer.document !== document || buffer.version !== document.version) {
+            buffer = { document, version: document.version, models: live ? this.cache.buffers.get(document).then(snapshot => snapshot.modules) :
                 this.cache.parseBuffer(document.getText(), document.uri.fsPath) };
             this.bufferModels.set(key, buffer);
         }
@@ -120,7 +135,7 @@ export class ProjectLanguageService {
             if (this.bufferModels.get(key) === buffer) { this.bufferModels.delete(key); }
             throw error;
         }
-        return [...models.filter(model => fileKey(model.filePath) !== fileKey(document.uri.fsPath)), ...local];
+        return local;
     }
 
     warm(document: vscode.TextDocument): void {

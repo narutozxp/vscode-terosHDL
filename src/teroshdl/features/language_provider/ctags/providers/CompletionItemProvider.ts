@@ -50,6 +50,7 @@ export default class VerilogCompletionItemProvider implements CompletionItemProv
 
     async provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken,
         context: CompletionContext): Promise<CompletionItem[]> {
+        if (document.isClosed || token?.isCancellationRequested) { return []; }
         this.logger.log("Completion items requested");
         const verilog = ['verilog', 'systemverilog'].includes(document.languageId);
         const version = document.version;
@@ -58,28 +59,31 @@ export default class VerilogCompletionItemProvider implements CompletionItemProv
         let modules: VerilogModule[] = [];
         let symbols: Ctags['symbols'] = [];
         let savedSource: string | undefined;
+        let liveScopes: ReturnType<typeof getCompletionScopes> | undefined;
         try {
-            if (this.cache && document.uri.scheme === 'file') {
+            if (this.cache && (document.uri.scheme === 'file' || live)) {
                 const [snapshot, projectModules] = await Promise.all([
                     (live ? this.cache.getBuffer(document).catch(error => {
-                        this.logger.log(`Live parsing failed, using saved symbols: ${error}`); return this.cache.get(document.uri.fsPath);
+                        this.logger.log(`Live parsing failed: ${error}`);
+                        return document.uri.scheme === 'file' ? this.cache.get(document.uri.fsPath) : undefined;
                     }) : this.cache.get(document.uri.fsPath)).catch(error => { this.logger.log(`Completion indexing failed: ${error}`); return undefined; }),
                     verilog && this.project ? this.project.modules(document).catch(error => {
                         this.logger.log(`Project indexing failed: ${error}`); return [];
                     }) : Promise.resolve([])
                 ]);
                 symbols = snapshot?.symbols ?? [];
-                savedSource = snapshot?.source;
-                modules = projectModules;
+                savedSource = snapshot && 'source' in snapshot ? snapshot.source : source;
+                liveScopes = snapshot?.scopes;
+                modules = document.uri.scheme === 'file' ? projectModules : snapshot?.modules ?? [];
             } else {
                 const ctags = CtagsManager.ctags;
                 if (ctags?.doc?.uri.toString() === document.uri.toString()) { symbols = ctags.symbols; }
             }
         } catch (error) { this.logger.log(`Completion indexing failed: ${error}`); }
-        if (token?.isCancellationRequested || document.version !== version) { return []; }
+        if (document.isClosed || token?.isCancellationRequested || document.version !== version) { return []; }
 
         if (verilog && (this.scopeCache?.document !== document || this.scopeCache.version !== document.version)) {
-            this.scopeCache = { document, version: document.version, scopes: getCompletionScopes(source) };
+            this.scopeCache = { document, version: document.version, scopes: liveScopes ?? getCompletionScopes(source) };
         }
         const offset = verilog ? document.offsetAt(position) : 0;
         if (verilog && modules.length) {

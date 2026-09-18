@@ -61,8 +61,7 @@ export class State_machine_manager extends Base_webview {
             'state_machine_viewer', 'libs', 'svg-pan-zoom.min.js'));
         const js_path_2 = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'resources', 'webviews',
             'state_machine_viewer', 'libs', 'vizdraw.js'));
-        const js_path_3 = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'resources', 'webviews',
-            'state_machine_viewer', 'libs', 'full.render.js'));
+        const js_path_3 = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'resources', 'viz', 'full.render.js'));
         const js_path_4 = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'resources', 'webviews',
             'state_machine_viewer', 'libs', 'viz.js'));
 
@@ -74,6 +73,7 @@ export class State_machine_manager extends Base_webview {
             "js_path_1": js_path_1,
             "js_path_2": js_path_2,
             "js_path_3": js_path_3,
+            "js_path_4": js_path_4,
         });
         return html;
     }

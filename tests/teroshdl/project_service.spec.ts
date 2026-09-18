@@ -131,4 +131,50 @@ describe('Project service discovery and buffer overlays', () => {
         scope(e_general_general_indexing_scope.openFiles);
         expect((await service.modules(doc)).map(model => model.name).sort()).toEqual(['child', 'top']);
     });
+
+    it('consumes unsaved interfaces from other open project files and restores disk models on close', async () => {
+        const top = file('top.sv', 'module top; endmodule');
+        const header = file('child.svh', 'module child(input old_port); endmodule');
+        const excluded = file('excluded.sv', 'module excluded; endmodule');
+        const current = document(top, 'module top; endmodule');
+        vscode.workspace.textDocuments = [current, document(header, 'module child(input new_port); endmodule'),
+            document(excluded, 'module must_not_leak; endmodule')];
+        setup([{ get_name: () => 'project', get_file: () => [top, header].map(name => ({ name })) }]);
+        const config = GlobalConfigManager.getInstance().get_config();
+        config.general.general.live_parsing = true;
+        GlobalConfigManager.getInstance().set_config(config);
+        let models = await service.modules(current);
+        expect(models.map(model => model.name).sort()).toEqual(['child', 'top']);
+        expect(models.find(model => model.name === 'child').ports.map(port => port.name)).toEqual(['new_port']);
+        const requests = jest.spyOn(cache.buffers, 'get');
+        await service.modules(current);
+        expect(requests).not.toHaveBeenCalled();
+        vscode.workspace.textDocuments[1] = document(header, 'module renamed(input reset); endmodule', 2);
+        models = await service.modules(current);
+        expect(models.map(model => model.name).sort()).toEqual(['renamed', 'top']);
+        expect(models.find(model => model.name === 'renamed').ports.map(port => port.name)).toEqual(['reset']);
+        vscode.workspace.textDocuments[1] = document(header, 'module reopened(input current); endmodule', 2);
+        models = await service.modules(current);
+        expect(models.map(model => model.name).sort()).toEqual(['reopened', 'top']);
+        vscode.workspace.textDocuments = [current];
+        models = await service.modules(current);
+        expect(models.find(model => model.name === 'child').ports.map(port => port.name)).toEqual(['old_port']);
+        expect(models.some(model => model.name === 'renamed')).toBe(false);
+    });
+
+    it('uses saved models for other clean tabs without initializing extra buffer states', async () => {
+        const top = file('top.sv', 'module top; endmodule');
+        const child = file('child.sv', 'module child(input clk); endmodule');
+        const current = document(top, 'module top; endmodule');
+        const clean = { ...document(child, 'module child(input clk); endmodule'), isDirty: false };
+        vscode.workspace.textDocuments = [current, clean];
+        setup([{ get_name: () => 'project', get_file: () => [top, child].map(name => ({ name })) }]);
+        const config = GlobalConfigManager.getInstance().get_config();
+        config.general.general.live_parsing = true;
+        GlobalConfigManager.getInstance().set_config(config);
+        const requests = jest.spyOn(cache.buffers, 'get');
+        expect((await service.modules(current)).map(model => model.name).sort()).toEqual(['child', 'top']);
+        expect(requests).toHaveBeenCalledTimes(1);
+        expect(requests).toHaveBeenCalledWith(current);
+    });
 });

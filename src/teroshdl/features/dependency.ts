@@ -64,8 +64,7 @@ export class Dependency_manager {
             base_path, 'libs', 'svg-pan-zoom.min.js'));
         const js_path_2 = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'resources', 'webviews',
             base_path, 'libs', 'vizdraw.js'));
-        const js_path_3 = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'resources', 'webviews',
-            base_path, 'libs', 'full.render.js'));
+        const js_path_3 = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'resources', 'viz', 'full.render.js'));
         const js_path_4 = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'resources', 'webviews',
             base_path, 'libs', 'viz.js'));
 

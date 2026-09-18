@@ -24,6 +24,12 @@ export interface VerilogModule {
     parameters: VerilogParameter[];
 }
 
+export interface ModuleSymbolPosition { offset: number; line: number; column: number; endColumn: number }
+export interface ModuleSymbolPositions {
+    ports: Map<string, ModuleSymbolPosition>;
+    parameters: Map<string, ModuleSymbolPosition>;
+}
+
 export interface VerilogToken {
     text: string;
     start: number;
@@ -51,6 +57,9 @@ function descendants(node: Parser.SyntaxNode, type: string): Parser.SyntaxNode[]
 export class VerilogProjectParser {
     private parser?: Parser;
     private initializing?: Promise<void>;
+    private positions = new WeakMap<VerilogModule, ModuleSymbolPositions>();
+
+    symbolPositions(module: VerilogModule): ModuleSymbolPositions | undefined { return this.positions.get(module); }
 
     private init(): Promise<void> {
         if (!this.initializing) {
@@ -71,15 +80,27 @@ export class VerilogProjectParser {
         finally { tree.delete(); }
     }
 
-    async extract(tree: Parser.Tree, source: string, filePath: string, recover = true): Promise<VerilogModule[]> {
+    async extract(tree: Parser.Tree, source: string, filePath: string, recover = true,
+        moduleNodes?: Parser.SyntaxNode[]): Promise<VerilogModule[]> {
         try {
-            const models: VerilogModule[] = tree.rootNode.namedChildren.filter(node => node.type === 'module_declaration').flatMap(node => {
-                const header = node.namedChildren.find(child => child.type === 'module_header');
+            const models: VerilogModule[] = (moduleNodes ?? tree.rootNode.namedChildren.filter(node => node.type === 'module_declaration')).flatMap(node => {
+                let header: Parser.SyntaxNode | undefined;
+                let ansi: Parser.SyntaxNode | undefined;
+                let nonansi: Parser.SyntaxNode | undefined;
+                let bodyStart = node.endIndex;
+                // Only visit the header prefix; a large module's body need not be materialized here.
+                for (let child = node.firstChild; child; child = child.nextSibling) {
+                    if (child.type === 'module_header') { header = child; }
+                    if (child.type === 'module_ansi_header') { ansi = child; }
+                    if (child.type === 'module_nonansi_header') { nonansi = child; }
+                    if (child.type === ';') { bodyStart = child.endIndex; break; }
+                }
                 const identifier = header?.namedChildren.find(child => /identifier$/.test(child.type));
                 if (!identifier?.text) { return []; }
-                const ansi = node.namedChildren.find(child => child.type === 'module_ansi_header');
-                const nonansi = node.namedChildren.find(child => child.type === 'module_nonansi_header');
                 const ports: VerilogPort[] = [];
+                const positions: ModuleSymbolPositions = { ports: new Map(), parameters: new Map() };
+                const position = (node: Parser.SyntaxNode): ModuleSymbolPosition => ({ offset: node.startIndex, line: node.startPosition.row,
+                    column: node.startPosition.column, endColumn: node.endPosition.column });
                 let inherited = 'wire';
                 let direction = '';
                 if (ansi) {
@@ -92,6 +113,7 @@ export class VerilogProjectParser {
                             direction = /\b(input|output|inout|ref)\b/.exec(prefix)?.[1] ?? '';
                         }
                         ports.push({ name: port.text, declaration: inherited, direction });
+                        if (!positions.ports.has(port.text)) { positions.ports.set(port.text, position(port)); }
                     }
                 } else if (nonansi) {
                     const declared = new Map<string, VerilogPort>();
@@ -105,21 +127,27 @@ export class VerilogProjectParser {
                     }
                     // Preserve external port names/order, including .external(internal) headers.
                     for (const port of descendants(nonansi, 'port')) {
-                        const name = descendants(port, 'port_identifier')[0]?.text;
-                        if (name) { ports.push(declared.get(name) ?? { name, declaration: '', direction: '' }); }
+                        const identifier = descendants(port, 'port_identifier')[0];
+                        const name = identifier?.text;
+                        if (name) {
+                            ports.push(declared.get(name) ?? { name, declaration: '', direction: '' });
+                            if (!positions.ports.has(name)) { positions.ports.set(name, position(identifier)); }
+                        }
                     }
                 }
                 const parameters: VerilogParameter[] = [];
+                const parameterNames = new Set<string>();
                 const collectParameters = (current: Parser.SyntaxNode) => {
                     if (current.type === 'local_parameter_declaration' || current.type === 'function_declaration' ||
                         current.type === 'task_declaration' || current !== node && current.type === 'module_declaration') { return; }
                     if (current.type === 'param_assignment' || current.type === 'type_assignment') {
-                        let name = current.namedChildren[0]?.text;
+                        let identifier = current.namedChildren[0];
                         // The bundled grammar puts an inherited parameter name in its parent data_type.
-                        if (!name && current.parent?.parent?.type === 'parameter_port_declaration') {
-                            name = current.parent.parent.namedChildren.find(child => child.type === 'data_type')?.text;
+                        if (!identifier?.text && current.parent?.parent?.type === 'parameter_port_declaration') {
+                            identifier = current.parent.parent.namedChildren.find(child => child.type === 'data_type');
                         }
-                        if (name && !parameters.some(parameter => parameter.name === name)) {
+                        const name = identifier?.text;
+                        if (name && !parameterNames.has(name)) {
                             const equal = current.text.indexOf('=');
                             let defaultValue = '';
                             if (equal >= 0) {
@@ -140,6 +168,8 @@ export class VerilogProjectParser {
                                 defaultValue = source.slice(start, end).trim();
                             }
                             parameters.push({ name, defaultValue });
+                            parameterNames.add(name);
+                            positions.parameters.set(name, position(identifier));
                         }
                         return;
                     }
@@ -149,20 +179,23 @@ export class VerilogProjectParser {
                     let parent = declaration.parent;
                     let excluded = false;
                     while (parent && parent.id !== node.id) {
-                        if (['function_declaration', 'task_declaration', 'local_parameter_declaration'].includes(parent.type)) { excluded = true; break; }
+                        if (['function_declaration', 'task_declaration', 'local_parameter_declaration', 'module_declaration'].includes(parent.type)) { excluded = true; break; }
                         parent = parent.parent;
                     }
                     if (!excluded) { collectParameters(declaration); }
                 }
-                const proceduralRanges = ['always_construct', 'initial_construct', 'function_declaration', 'task_declaration']
-                    .flatMap(type => descendants(node, type).map(child => ({ start: child.startIndex, end: child.endIndex })));
-                return [{ name: identifier.text, filePath, start: node.startIndex, end: node.endIndex,
-                    line: identifier.startPosition.row, bodyStart: node.children.find(child => child.type === ';')?.endIndex ?? node.endIndex,
-                    proceduralRanges, ports, parameters }];
+                const proceduralRanges = node.descendantsOfType(['always_construct', 'initial_construct', 'function_declaration', 'task_declaration'])
+                    .map(child => ({ start: child.startIndex, end: child.endIndex }))
+                    .sort((a, b) => a.start - b.start);
+                const model: VerilogModule = { name: identifier.text, filePath, start: node.startIndex, end: node.endIndex,
+                    line: identifier.startPosition.row, bodyStart,
+                    proceduralRanges, ports, parameters };
+                this.positions.set(model, positions);
+                return [model];
             });
             // A half-typed body statement can make the grammar classify an entire module as ERROR.
             // Recover its intact header rather than losing module completion while the user types.
-            if (recover && tree.rootNode.hasError()) {
+            if (recover && !moduleNodes && tree.rootNode.hasError()) {
                 const tokens = verilogTokens(source);
                 for (let index = 0; index < tokens.length; index++) {
                     const start = tokens[index];
@@ -180,9 +213,21 @@ export class VerilogProjectParser {
                         if (headerEnd !== undefined) {
                             const recovered = await this.parse(source.slice(start.start, headerEnd) + '\nendmodule', filePath, false);
                             for (const model of recovered) {
+                                const lineOffset = source.slice(0, start.start).split('\n').length - 1;
+                                const columnOffset = start.start - source.lastIndexOf('\n', start.start - 1) - 1;
+                                const positions = this.positions.get(model);
+                                if (positions) {
+                                    for (const records of [positions.ports, positions.parameters]) {
+                                        for (const [name, record] of records) {
+                                            records.set(name, { offset: record.offset + start.start, line: record.line + lineOffset,
+                                                column: record.column + (record.line === 0 ? columnOffset : 0),
+                                                endColumn: record.endColumn + (record.line === 0 ? columnOffset : 0) });
+                                        }
+                                    }
+                                }
                                 model.start = start.start;
                                 model.end = tokens[finish]?.end ?? source.length;
-                                model.line += source.slice(0, start.start).split('\n').length - 1;
+                                model.line += lineOffset;
                                 model.bodyStart += start.start;
                                 // An invalid body cannot safely determine procedural context for snippets.
                                 const bodyTokens = tokens.slice(index + 1, finish).filter(token => token.start >= headerEnd);
